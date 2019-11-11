@@ -1,0 +1,23 @@
+{
+    "name": "nclshart/php-lox",
+    "description": "Lox interpreter written in PHP",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nicolas Hart",
+            "email": "contact@nclshart.net"
+        }
+    ],
+    "require": {
+        "myclabs/php-enum": "^1.7"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Lox\\": "src/"
+        }
+    }
+}

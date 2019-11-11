@@ -1,0 +1,23 @@
+#!/usr/bin/env php
+
+<?php
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Lox\Lox;
+
+$lox = new Lox();
+
+$args = $_SERVER['argv'];
+
+switch (count($args)) {
+    case 1:
+        $lox->runPrompt();
+        break;
+    case 2:
+        $lox->runFile($args[1]);
+        break;
+    default:
+        print "Usage: php-lox [script]" . PHP_EOL;
+        break;
+}
