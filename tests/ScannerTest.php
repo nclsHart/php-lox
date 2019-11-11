@@ -72,6 +72,39 @@ class ScannerTest extends TestCase
                     'DOT . null',
                     'EOF  null',
                 ]
+            ],
+            'identifiers' => [
+                'andy formless fo _ _123 _abc ab123 abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_', [
+                    'IDENTIFIER andy null',
+                    'IDENTIFIER formless null',
+                    'IDENTIFIER fo null',
+                    'IDENTIFIER _ null',
+                    'IDENTIFIER _123 null',
+                    'IDENTIFIER _abc null',
+                    'IDENTIFIER ab123 null',
+                    'IDENTIFIER abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_ null',
+                    'EOF  null',
+                ]
+            ],
+            'keywords' => [
+                'and class else false for fun if nil or return super this true var while', [
+                    'AND and null',
+                    'TCLASS class null',
+                    'ELSE else null',
+                    'FALSE false null',
+                    'FOR for null',
+                    'FUN fun null',
+                    'IF if null',
+                    'NIL nil null',
+                    'OR or null',
+                    'RETURN return null',
+                    'SUPER super null',
+                    'THIS this null',
+                    'TRUE true null',
+                    'VAR var null',
+                    'WHILE while null',
+                    'EOF  null',
+                ]
             ]
         ];
     }

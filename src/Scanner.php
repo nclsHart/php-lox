@@ -120,6 +120,12 @@ class Scanner
                     return;
                 }
 
+                if ($this->isAlpha($char)) {
+                    $this->identifier();
+
+                    return;
+                }
+
                 Lox::error($this->line, 'Unexpected character.');
                 break;
         }
@@ -227,5 +233,30 @@ class Scanner
         }
 
         return $this->charAt($this->current + 1);
+    }
+
+    private function identifier(): void
+    {
+        while ($this->isAlphaNumeric($this->peek())) {
+            $this->advance();
+        }
+
+        $text = substr($this->source, $this->start, $this->current - $this->start);
+
+        $type = Keywords::getInstance()->get($text);
+        if (null === $type) {
+            $type = TokenType::IDENTIFIER();
+        }
+        $this->addToken($type);
+    }
+
+    private function isAlpha(string $char): bool
+    {
+        return ($char >= 'a' && $char <= 'z') || ($char >= 'A' && $char <= 'Z') || $char == '_';
+    }
+
+    private function isAlphaNumeric(string $char): bool
+    {
+        return $this->isAlpha($char) || $this->isDigit($char);
     }
 }

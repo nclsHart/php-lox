@@ -27,6 +27,22 @@ use MyCLabs\Enum\Enum;
  * @method static TokenType IDENTIFIER
  * @method static TokenType STRING
  * @method static TokenType NUMBER
+ * @method static TokenType AND
+ * @method static TokenType ELSE
+ * @method static TokenType FALSE
+ * @method static TokenType FUN
+ * @method static TokenType FOR
+ * @method static TokenType IF
+ * @method static TokenType NIL
+ * @method static TokenType OR
+ * @method static TokenType PRINT
+ * @method static TokenType RETURN
+ * @method static TokenType SUPER
+ * @method static TokenType TCLASS
+ * @method static TokenType THIS
+ * @method static TokenType TRUE
+ * @method static TokenType VAR
+ * @method static TokenType WHILE
  * @method static TokenType EOF
  */
 class TokenType extends Enum
@@ -61,17 +77,17 @@ class TokenType extends Enum
 
     // Keywords.
     private const AND = 23;
-    private const TCLASS = 24;
-    private const ELSE = 25;
-    private const FALSE = 26;
-    private const FUN = 27;
-    private const FOR = 28;
-    private const IF = 29;
-    private const NIL = 30;
-    private const OR = 31;
-    private const PRINT = 32;
-    private const RETURN = 33;
-    private const SUPER = 34;
+    private const ELSE = 24;
+    private const FALSE = 25;
+    private const FUN = 26;
+    private const FOR = 27;
+    private const IF = 28;
+    private const NIL = 29;
+    private const OR = 30;
+    private const PRINT = 31;
+    private const RETURN = 32;
+    private const SUPER = 33;
+    private const TCLASS = 34;
     private const THIS = 35;
     private const TRUE = 36;
     private const VAR = 37;
