@@ -1,0 +1,103 @@
+#!/usr/bin/env php
+<?php
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Nette\PhpGenerator\ClassType;
+use Nette\PhpGenerator\PhpFile;
+use Nette\PhpGenerator\PsrPrinter;
+
+const EXPR_DIR = __DIR__ . '/../src/Expr';
+
+function generateBaseExpr(): void
+{
+    $class = new ClassType('Expr');
+    $class->setAbstract();
+
+    writeClass($class);
+}
+
+function generateExpr(string $className, array $properties = []): void
+{
+    $class = new ClassType($className);
+    $class->addExtend('\Lox\Expr\Expr');
+    $class->setFinal();
+
+    $constructor = $class->addMethod('__construct');
+
+    foreach ($properties as $property) {
+        $parts = explode(' ', trim($property));
+
+        $type = null;
+        if (isset($parts[1])) {
+            $type = $parts[0];
+            $propertyName = $parts[1];
+        } else {
+            $propertyName = $parts[0];
+        }
+
+        // add property
+        $property = $class->addProperty($propertyName);
+        $property->setVisibility('private');
+
+        // add constructor parameter and init property
+        $parameter = $constructor->addParameter($propertyName);
+        if (null !== $type) {
+            $parameter->setTypeHint($type);
+        }
+        $constructor->addBody('$this->? = $?;', [$propertyName, $propertyName]);
+
+        // add getter
+        $getter = $class->addMethod($propertyName);
+        if (null !== $type) {
+            $getter->setReturnType($type);
+        }
+        $getter->addBody('return $this->?;', [$propertyName]);
+    }
+
+    writeClass($class);
+}
+
+function writeClass(ClassType $class): void
+{
+    $file = new PhpFile();
+    $file->addComment('This file is auto-generated.');
+    $file->setStrictTypes();
+
+    $namespace = $file->addNamespace('Lox\Expr');
+    $namespace->add($class);
+
+    if ($class->hasMethod('__construct')) {
+        $constructor = $class->getMethod('__construct');
+        foreach ($constructor->getParameters() as $parameter) {
+            if (null !== $parameter->getTypeHint() && !in_array($parameter->getTypeHint(), $namespace->getUses())) {
+                $namespace->addUse($parameter->getTypeHint());
+            }
+        }
+    }
+
+    file_put_contents(
+        sprintf('%s/%s.php', EXPR_DIR, $class->getName()),
+        (new PsrPrinter)->printFile($file)
+    );
+}
+
+generateBaseExpr();
+
+$types = [
+    'Binary   : Lox\Expr\Expr left, Lox\Token operator, Lox\Expr\Expr right',
+    'Grouping : Lox\Expr\Expr expression',
+    'Literal  : value',
+    'Unary    : Lox\Token operator, Lox\Expr\Expr right',
+];
+
+foreach ($types as $type) {
+    $parts = explode(':', $type);
+    $className = trim($parts[0]);
+    $propertiesAsString = trim($parts[1]);
+
+    $properties = explode(',', $propertiesAsString);
+
+    generateExpr($className, $properties);
+}
+
