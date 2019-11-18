@@ -21,4 +21,9 @@ final class Grouping extends Expr
     {
         return $this->expression;
     }
+
+    public function accept(Visitor $visitor): Visitor
+    {
+        return $visitor->visitGroupingExpr($this);
+    }
 }

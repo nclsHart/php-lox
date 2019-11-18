@@ -9,12 +9,61 @@ use Nette\PhpGenerator\PsrPrinter;
 
 const EXPR_DIR = __DIR__ . '/../src/Expr';
 
+$types = [
+    'Binary   : Lox\Expr\Expr left, Lox\Token operator, Lox\Expr\Expr right',
+    'Grouping : Lox\Expr\Expr expression',
+    'Literal  : value',
+    'Unary    : Lox\Token operator, Lox\Expr\Expr right',
+];
+
+generateBaseExpr();
+generateVisitor($types);
+generateAllExpr($types);
+
 function generateBaseExpr(): void
 {
     $class = new ClassType('Expr');
     $class->setAbstract();
 
+    $method = $class->addMethod('accept');
+    $method->setAbstract();
+    $method->setReturnType('\Lox\Expr\Visitor');
+    $param = $method->addParameter('visitor');
+    $param->setTypeHint('\Lox\Expr\Visitor');
+
     writeClass($class);
+}
+
+function generateVisitor(array $types): void
+{
+    $class = new ClassType('Visitor');
+    $class->setType('interface');
+
+    foreach ($types as $type) {
+        $parts = explode(':', $type);
+        $typeName = trim($parts[0]);
+
+        $method = $class->addMethod(sprintf('visit%sExpr', $typeName));
+        $method->setReturnType('Lox\Expr\Visitor');
+        $method->setVisibility('public');
+        $param = $method->addParameter('expr');
+        $param->setTypeHint(sprintf('Lox\Expr\%s', $typeName));
+    }
+
+    writeClass($class);
+}
+
+function generateAllExpr(array $types): void
+{
+    foreach ($types as $type) {
+        $parts = explode(':', $type);
+        $className = trim($parts[0]);
+        $propertiesAsString = trim($parts[1]);
+
+        $properties = explode(',', $propertiesAsString);
+
+        generateExpr($className, $properties);
+    }
 }
 
 function generateExpr(string $className, array $properties = []): void
@@ -53,6 +102,13 @@ function generateExpr(string $className, array $properties = []): void
             $getter->setReturnType($type);
         }
         $getter->addBody('return $this->?;', [$propertyName]);
+
+        // implements accept method
+        $method = $class->addMethod('accept');
+        $method->setReturnType('\Lox\Expr\Visitor');
+        $param = $method->addParameter('visitor');
+        $param->setTypeHint('\Lox\Expr\Visitor');
+        $method->addBody(sprintf('return $visitor->visit%sExpr($this);', $className));
     }
 
     writeClass($class);
@@ -81,23 +137,3 @@ function writeClass(ClassType $class): void
         (new PsrPrinter)->printFile($file)
     );
 }
-
-generateBaseExpr();
-
-$types = [
-    'Binary   : Lox\Expr\Expr left, Lox\Token operator, Lox\Expr\Expr right',
-    'Grouping : Lox\Expr\Expr expression',
-    'Literal  : value',
-    'Unary    : Lox\Token operator, Lox\Expr\Expr right',
-];
-
-foreach ($types as $type) {
-    $parts = explode(':', $type);
-    $className = trim($parts[0]);
-    $propertiesAsString = trim($parts[1]);
-
-    $properties = explode(',', $propertiesAsString);
-
-    generateExpr($className, $properties);
-}
-

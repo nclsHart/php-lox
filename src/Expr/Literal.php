@@ -21,4 +21,9 @@ final class Literal extends Expr
     {
         return $this->value;
     }
+
+    public function accept(Visitor $visitor): Visitor
+    {
+        return $visitor->visitLiteralExpr($this);
+    }
 }
