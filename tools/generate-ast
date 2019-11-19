@@ -27,7 +27,6 @@ function generateBaseExpr(): void
 
     $method = $class->addMethod('accept');
     $method->setAbstract();
-    $method->setReturnType('\Lox\Expr\Visitor');
     $param = $method->addParameter('visitor');
     $param->setTypeHint('\Lox\Expr\Visitor');
 
@@ -44,7 +43,6 @@ function generateVisitor(array $types): void
         $typeName = trim($parts[0]);
 
         $method = $class->addMethod(sprintf('visit%sExpr', $typeName));
-        $method->setReturnType('Lox\Expr\Visitor');
         $method->setVisibility('public');
         $param = $method->addParameter('expr');
         $param->setTypeHint(sprintf('Lox\Expr\%s', $typeName));
@@ -105,7 +103,6 @@ function generateExpr(string $className, array $properties = []): void
 
         // implements accept method
         $method = $class->addMethod('accept');
-        $method->setReturnType('\Lox\Expr\Visitor');
         $param = $method->addParameter('visitor');
         $param->setTypeHint('\Lox\Expr\Visitor');
         $method->addBody(sprintf('return $visitor->visit%sExpr($this);', $className));

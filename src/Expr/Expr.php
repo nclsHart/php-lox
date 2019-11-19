@@ -10,5 +10,5 @@ namespace Lox\Expr;
 
 abstract class Expr
 {
-    abstract public function accept(Visitor $visitor): Visitor;
+    abstract public function accept(Visitor $visitor);
 }

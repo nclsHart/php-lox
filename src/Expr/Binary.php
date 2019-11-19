@@ -30,7 +30,7 @@ final class Binary extends Expr
         return $this->left;
     }
 
-    public function accept(Visitor $visitor): Visitor
+    public function accept(Visitor $visitor)
     {
         return $visitor->visitBinaryExpr($this);
     }

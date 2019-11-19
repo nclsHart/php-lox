@@ -27,7 +27,7 @@ final class Unary extends Expr
         return $this->operator;
     }
 
-    public function accept(Visitor $visitor): Visitor
+    public function accept(Visitor $visitor)
     {
         return $visitor->visitUnaryExpr($this);
     }

@@ -10,11 +10,11 @@ namespace Lox\Expr;
 
 interface Visitor
 {
-    public function visitBinaryExpr(Binary $expr): Visitor;
+    public function visitBinaryExpr(Binary $expr);
 
-    public function visitGroupingExpr(Grouping $expr): Visitor;
+    public function visitGroupingExpr(Grouping $expr);
 
-    public function visitLiteralExpr(Literal $expr): Visitor;
+    public function visitLiteralExpr(Literal $expr);
 
-    public function visitUnaryExpr(Unary $expr): Visitor;
+    public function visitUnaryExpr(Unary $expr);
 }
