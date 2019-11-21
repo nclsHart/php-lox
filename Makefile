@@ -6,4 +6,7 @@ install:
 test:
 	@vendor/bin/phpunit --colors
 
-.PHONY: install test
+cs:
+	@vendor/bin/php-cs-fixer fix
+
+.PHONY: install test cs

@@ -49,6 +49,6 @@ class AstPrinter implements Visitor
         }
         $result .= ')';
 
-    return $result;
+        return $result;
     }
 }

@@ -50,7 +50,7 @@ class Scanner
     {
         $char = $this->advance();
 
-        switch($char) {
+        switch ($char) {
             case '(':
                 $this->addToken(TokenType::LEFT_PAREN());
                 break;
@@ -151,7 +151,7 @@ class Scanner
 
     private function match(string $expected): bool
     {
-        if ($this->isAtEnd()){
+        if ($this->isAtEnd()) {
             return false;
         }
 
