@@ -29,9 +29,24 @@ class Token
         $this->line = $line;
     }
 
+    public function type(): TokenType
+    {
+        return $this->type;
+    }
+
     public function lexeme(): string
     {
         return $this->lexeme;
+    }
+
+    public function literal()
+    {
+        return $this->literal;
+    }
+
+    public function line(): int
+    {
+        return $this->line;
     }
 
     public function __toString(): string

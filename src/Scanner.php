@@ -126,7 +126,7 @@ class Scanner
                     return;
                 }
 
-                Lox::error($this->line, 'Unexpected character.');
+                Lox::scanError($this->line, 'Unexpected character.');
                 break;
         }
     }
@@ -184,7 +184,7 @@ class Scanner
 
         // Unterminated string.
         if ($this->isAtEnd()) {
-            Lox::error($this->line, 'Unterminated string.');
+            Lox::scanError($this->line, 'Unterminated string.');
 
             return;
         }
