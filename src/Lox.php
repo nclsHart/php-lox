@@ -4,7 +4,16 @@ namespace Lox;
 
 class Lox
 {
+    private static $interpreter;
+
     private static $hadError = false;
+
+    private static $hadRuntimeError = false;
+
+    public function __construct()
+    {
+        self::$interpreter = new Interpreter();
+    }
 
     public function runFile(string $file): void
     {
@@ -15,7 +24,11 @@ class Lox
         $this->run(file_get_contents($file));
 
         if (self::$hadError) {
-            exit(1);
+            exit(65);
+        }
+
+        if (self::$hadRuntimeError) {
+            exit(70);
         }
     }
 
@@ -45,6 +58,13 @@ class Lox
         self::report($token->line(), sprintf(' at "%s"', $token->lexeme()), $message);
     }
 
+    public static function runtimeError(RuntimeError $error): void
+    {
+        fwrite(STDERR, sprintf('%s [line %s]', $error->getMessage(), $error->getToken()->line()) . PHP_EOL);
+
+        self::$hadRuntimeError = true;
+    }
+
     private function run(string $source): void
     {
         $scanner = new Scanner($source);
@@ -57,7 +77,7 @@ class Lox
             return;
         }
 
-        print (new AstPrinter())->print($expression) . "\n";
+        self::$interpreter->interpret($expression);
     }
 
     private static function report(int $line, string $where, string $message): void
