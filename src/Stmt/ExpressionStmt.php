@@ -26,6 +26,6 @@ final class ExpressionStmt extends Stmt
 
     public function accept(Visitor $visitor)
     {
-        return $visitor->visitExpressionStmtStmt($this);
+        return $visitor->visitExpressionStmt($this);
     }
 }

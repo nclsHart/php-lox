@@ -68,7 +68,12 @@ function generateVisitor(string $baseName, array $types): ClassType
         $parts = explode(':', $type);
         $typeName = trim($parts[0]);
 
-        $method = $class->addMethod(sprintf('visit%s%s', $typeName, $baseName));
+        // because Stmt classes already have Stmt suffix
+        if (strpos($typeName, $baseName)) {
+            $method = $class->addMethod(sprintf('visit%s', $typeName));
+        } else {
+            $method = $class->addMethod(sprintf('visit%s%s', $typeName, $baseName));
+        }
         $method->setVisibility('public');
         $param = $method->addParameter(strtolower($baseName));
         $param->setTypeHint(sprintf('Lox\%s\%s', $baseName, $typeName));
@@ -118,7 +123,12 @@ function generateType(string $baseName, string $className, array $properties = [
         $method = $class->addMethod('accept');
         $param = $method->addParameter('visitor');
         $param->setTypeHint(sprintf('\Lox\%s\Visitor', $baseName));
-        $method->addBody(sprintf('return $visitor->visit%s%s($this);', $className, $baseName));
+
+        if (strpos($className, $baseName)) {
+            $method->addBody(sprintf('return $visitor->visit%s($this);', $className));
+        } else {
+            $method->addBody(sprintf('return $visitor->visit%s%s($this);', $className, $baseName));
+        }
     }
 
     return $class;

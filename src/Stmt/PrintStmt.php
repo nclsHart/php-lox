@@ -26,6 +26,6 @@ final class PrintStmt extends Stmt
 
     public function accept(Visitor $visitor)
     {
-        return $visitor->visitPrintStmtStmt($this);
+        return $visitor->visitPrintStmt($this);
     }
 }
