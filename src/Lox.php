@@ -71,13 +71,13 @@ class Lox
         $tokens = $scanner->scanTokens();
 
         $parser = new Parser($tokens);
-        $expression = $parser->parse();
+        $statements = $parser->parse();
 
         if (self::$hadError) {
             return;
         }
 
-        self::$interpreter->interpret($expression);
+        self::$interpreter->interpret($statements);
     }
 
     private static function report(int $line, string $where, string $message): void

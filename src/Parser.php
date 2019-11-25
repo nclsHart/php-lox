@@ -7,6 +7,9 @@ use Lox\Expr\Expr;
 use Lox\Expr\Grouping;
 use Lox\Expr\Literal;
 use Lox\Expr\Unary;
+use Lox\Stmt\ExpressionStmt;
+use Lox\Stmt\PrintStmt;
+use Lox\Stmt\Stmt;
 
 class Parser
 {
@@ -28,13 +31,42 @@ class Parser
         $this->tokens = $tokens;
     }
 
-    public function parse(): ?Expr
+    /**
+     * @return Stmt[]
+     */
+    public function parse(): array
     {
-        try {
-            return $this->expression();
-        } catch (ParseError $error) {
-            return null;
+        $statements = [];
+        while (!$this->isAtEnd()) {
+            $statements[] = $this->statement();
         }
+
+        return $statements;
+    }
+
+    private function statement(): Stmt
+    {
+        if ($this->match(TokenType::PRINT())) {
+            return $this->printStatement();
+        }
+
+        return $this->expressionStatement();
+    }
+
+    private function printStatement(): Stmt
+    {
+        $value = $this->expression();
+        $this->consume(TokenType::SEMICOLON(), 'Expect ";" after value.');
+
+        return new PrintStmt($value);
+    }
+
+    private function expressionStatement(): Stmt
+    {
+        $expr = $this->expression();
+        $this->consume(TokenType::SEMICOLON(), 'Expect ";" after expression.');
+
+        return new ExpressionStmt($expr);
     }
 
     private function expression(): Expr
@@ -124,7 +156,7 @@ class Parser
 
         if ($this->match(TokenType::LEFT_PAREN())) {
             $expr = $this->expression();
-            $this->consume(TokenType::RIGHT_PAREN(), "Expect ')' after expression.");
+            $this->consume(TokenType::RIGHT_PAREN(), 'Expect ")" after expression.');
 
             return new Grouping($expr);
         }
@@ -165,7 +197,7 @@ class Parser
 
     private function isAtEnd(): bool
     {
-        return $this->peek()->type() === TokenType::EOF();
+        return $this->peek()->type() == TokenType::EOF();
     }
 
     private function peek(): Token

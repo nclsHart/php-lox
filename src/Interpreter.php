@@ -7,15 +7,23 @@ use Lox\Expr\Expr;
 use Lox\Expr\Grouping;
 use Lox\Expr\Literal;
 use Lox\Expr\Unary;
-use Lox\Expr\Visitor;
+use Lox\Expr\Visitor as VisitorExpr;
+use Lox\Stmt\ExpressionStmt;
+use Lox\Stmt\PrintStmt;
+use Lox\Stmt\Stmt;
+use Lox\Stmt\Visitor as VisitorStmt;
 
-class Interpreter implements Visitor
+class Interpreter implements VisitorExpr, VisitorStmt
 {
-    public function interpret(Expr $expression): void
+    /**
+     * @param Stmt[] $statements
+     */
+    public function interpret(array $statements): void
     {
         try {
-            $value = $this->evaluate($expression);
-            print $this->stringify($value) . "\n";
+            foreach ($statements as $statement) {
+                $this->execute($statement);
+            }
         } catch (RuntimeError $error) {
             Lox::runtimeError($error);
         }
@@ -103,9 +111,25 @@ class Interpreter implements Visitor
         return null;
     }
 
+    public function visitExpressionStmt(ExpressionStmt $stmt): void
+    {
+        $this->evaluate($stmt->expression());
+    }
+
+    public function visitPrintStmt(PrintStmt $stmt): void
+    {
+        $value = $this->evaluate($stmt->expression());
+        print $this->stringify($value) . "\n";
+    }
+
     private function evaluate(Expr $expr)
     {
         return $expr->accept($this);
+    }
+
+    private function execute(Stmt $stmt): void
+    {
+        $stmt->accept($this);
     }
 
     private function isTruthy($object): bool
