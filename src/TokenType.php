@@ -94,4 +94,9 @@ class TokenType extends Enum
     private const WHILE = 38;
 
     private const EOF = 39;
+
+    public function __toString()
+    {
+        return (string) $this->getKey();
+    }
 }
