@@ -8,32 +8,58 @@ use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\PsrPrinter;
 
 const EXPR_DIR = __DIR__ . '/../src/Expr';
+const STMT_DIR = __DIR__ . '/../src/Stmt';
 
-$types = [
+defineAst(EXPR_DIR, 'Expr', [
     'Binary   : Lox\Expr\Expr left, Lox\Token operator, Lox\Expr\Expr right',
     'Grouping : Lox\Expr\Expr expression',
     'Literal  : value',
     'Unary    : Lox\Token operator, Lox\Expr\Expr right',
-];
+]);
 
-generateBaseExpr();
-generateVisitor($types);
-generateAllExpr($types);
+defineAst(STMT_DIR, 'Stmt', [
+    'ExpressionStmt : Lox\Expr\Expr expression',
+    'PrintStmt      : Lox\Expr\Expr expression',
+]);
 
-function generateBaseExpr(): void
+function defineAst(string $outputDir, string $baseName, array $types): void
 {
-    $class = new ClassType('Expr');
+    if (!is_dir($outputDir)) {
+        mkdir($outputDir);
+    }
+
+    $baseClass = generateBaseClass($baseName);
+    writeClass($outputDir, $baseName, $baseClass);
+
+    $visitorInterface = generateVisitor($baseName, $types);
+    writeClass($outputDir, $baseName, $visitorInterface);
+
+    foreach ($types as $type) {
+        $parts = explode(':', $type);
+        $className = trim($parts[0]);
+        $propertiesAsString = trim($parts[1]);
+
+        $properties = explode(',', $propertiesAsString);
+
+        $typeClass = generateType($baseName, $className, $properties);
+        writeClass($outputDir, $baseName, $typeClass);
+    }
+}
+
+function generateBaseClass(string $baseName): ClassType
+{
+    $class = new ClassType($baseName);
     $class->setAbstract();
 
     $method = $class->addMethod('accept');
     $method->setAbstract();
     $param = $method->addParameter('visitor');
-    $param->setTypeHint('\Lox\Expr\Visitor');
+    $param->setTypeHint(sprintf('\Lox\%s\Visitor', $baseName));
 
-    writeClass($class);
+    return $class;
 }
 
-function generateVisitor(array $types): void
+function generateVisitor(string $baseName, array $types): ClassType
 {
     $class = new ClassType('Visitor');
     $class->setType('interface');
@@ -42,32 +68,19 @@ function generateVisitor(array $types): void
         $parts = explode(':', $type);
         $typeName = trim($parts[0]);
 
-        $method = $class->addMethod(sprintf('visit%sExpr', $typeName));
+        $method = $class->addMethod(sprintf('visit%s%s', $typeName, $baseName));
         $method->setVisibility('public');
-        $param = $method->addParameter('expr');
-        $param->setTypeHint(sprintf('Lox\Expr\%s', $typeName));
+        $param = $method->addParameter(strtolower($baseName));
+        $param->setTypeHint(sprintf('Lox\%s\%s', $baseName, $typeName));
     }
 
-    writeClass($class);
+    return $class;
 }
 
-function generateAllExpr(array $types): void
-{
-    foreach ($types as $type) {
-        $parts = explode(':', $type);
-        $className = trim($parts[0]);
-        $propertiesAsString = trim($parts[1]);
-
-        $properties = explode(',', $propertiesAsString);
-
-        generateExpr($className, $properties);
-    }
-}
-
-function generateExpr(string $className, array $properties = []): void
+function generateType(string $baseName, string $className, array $properties = []): ClassType
 {
     $class = new ClassType($className);
-    $class->addExtend('\Lox\Expr\Expr');
+    $class->addExtend(sprintf('\Lox\%s\%1$s', $baseName));
     $class->setFinal();
 
     $constructor = $class->addMethod('__construct');
@@ -104,20 +117,20 @@ function generateExpr(string $className, array $properties = []): void
         // implements accept method
         $method = $class->addMethod('accept');
         $param = $method->addParameter('visitor');
-        $param->setTypeHint('\Lox\Expr\Visitor');
-        $method->addBody(sprintf('return $visitor->visit%sExpr($this);', $className));
+        $param->setTypeHint(sprintf('\Lox\%s\Visitor', $baseName));
+        $method->addBody(sprintf('return $visitor->visit%s%s($this);', $className, $baseName));
     }
 
-    writeClass($class);
+    return $class;
 }
 
-function writeClass(ClassType $class): void
+function writeClass(string $outputDir, string $baseName, ClassType $class): void
 {
     $file = new PhpFile();
     $file->addComment('This file is auto-generated.');
     $file->setStrictTypes();
 
-    $namespace = $file->addNamespace('Lox\Expr');
+    $namespace = $file->addNamespace(sprintf('Lox\%s', $baseName));
     $namespace->add($class);
 
     if ($class->hasMethod('__construct')) {
@@ -130,7 +143,7 @@ function writeClass(ClassType $class): void
     }
 
     file_put_contents(
-        sprintf('%s/%s.php', EXPR_DIR, $class->getName()),
+        sprintf('%s/%s.php', $outputDir, $class->getName()),
         (new PsrPrinter)->printFile($file)
     );
 }
