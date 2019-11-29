@@ -108,4 +108,23 @@ class ScannerTest extends TestCase
             ]
         ];
     }
+
+    public function test_scan_complete_file(): void
+    {
+        $scanner = new Scanner(file_get_contents(__DIR__ . '/lox/operator/add.lox'));
+        $tokens = $scanner->scanTokens();
+
+        $this->assertCount(11, $tokens);
+        $this->assertSame('PRINT print null', (string) array_shift($tokens));
+        $this->assertSame('NUMBER 123 123', (string) array_shift($tokens));
+        $this->assertSame('PLUS + null', (string) array_shift($tokens));
+        $this->assertSame('NUMBER 456 456', (string) array_shift($tokens));
+        $this->assertSame('SEMICOLON ; null', (string) array_shift($tokens));
+        $this->assertSame('PRINT print null', (string) array_shift($tokens));
+        $this->assertSame('STRING "str" str', (string) array_shift($tokens));
+        $this->assertSame('PLUS + null', (string) array_shift($tokens));
+        $this->assertSame('STRING "ing" ing', (string) array_shift($tokens));
+        $this->assertSame('SEMICOLON ; null', (string) array_shift($tokens));
+        $this->assertSame('EOF  null', (string) array_shift($tokens));
+    }
 }
