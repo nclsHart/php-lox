@@ -35,6 +35,14 @@ class Interpreter implements VisitorExpr, VisitorStmt
             return 'nil';
         }
 
+        if (true === $object) {
+            return 'true';
+        }
+
+        if (false === $object) {
+            return 'false';
+        }
+
         return (string)$object;
     }
 
@@ -156,7 +164,7 @@ class Interpreter implements VisitorExpr, VisitorStmt
             return false;
         }
 
-        return $a == $b;
+        return $a === $b;
     }
 
     private function checkNumberOperand(Token $operator, $operand): void
