@@ -59,7 +59,7 @@ class LoxTest extends TestCase
     {
         $files = (new Factory())->getFileIterator(__DIR__ . '/lox', '.lox');
 
-        foreach($files as $file) {
+        foreach ($files as $file) {
             yield $this->extractDataSetName($file) => [$file];
         }
     }
@@ -67,7 +67,8 @@ class LoxTest extends TestCase
     private function extractDataSetName(SplFileInfo $file): string
     {
         return trim(
-            str_replace(self::FIXTURES_DIR, '', $file->getPathname()), '/'
+            str_replace(self::FIXTURES_DIR, '', $file->getPathname()),
+            '/'
         );
     }
 }
