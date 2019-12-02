@@ -31,7 +31,7 @@ class Interpreter implements VisitorExpr, VisitorStmt
 
     private function stringify($object): string
     {
-        if ($object == null) {
+        if (null === $object) {
             return 'nil';
         }
 
