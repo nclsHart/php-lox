@@ -2,6 +2,7 @@
 
 namespace Lox;
 
+use Lox\Expr\Assign;
 use Lox\Expr\Binary;
 use Lox\Expr\Expr;
 use Lox\Expr\Grouping;
@@ -100,9 +101,27 @@ class Parser
         return new ExpressionStmt($expr);
     }
 
+    private function assignment(): Expr
+    {
+        $expr = $this->equality();
+
+        if ($this->match(TokenType::EQUAL())) {
+            $equals = $this->previous();
+            $value = $this->assignment();
+
+            if ($expr instanceof Variable) {
+                return new Assign($expr->name(), $value);
+            }
+
+            $this->error($equals, 'Invalid assignment target.');
+        }
+
+        return $expr;
+    }
+
     private function expression(): Expr
     {
-        return $this->equality();
+        return $this->assignment();
     }
 
     private function equality(): Expr

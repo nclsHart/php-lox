@@ -22,4 +22,15 @@ class Environment
 
         throw new RuntimeError($name, sprintf('Undefined variable "%s"', $name->lexeme()));
     }
+
+    public function assign(Token $name, $value): void
+    {
+        if (isset($this->values[$name->lexeme()])) {
+            $this->values[$name->lexeme()] = $value;
+
+            return;
+        }
+
+        throw new RuntimeError($name, sprintf('Undefined variable "%s"', $name->lexeme()));
+    }
 }

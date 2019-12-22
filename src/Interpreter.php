@@ -2,6 +2,7 @@
 
 namespace Lox;
 
+use Lox\Expr\Assign;
 use Lox\Expr\Binary;
 use Lox\Expr\Expr;
 use Lox\Expr\Grouping;
@@ -155,6 +156,15 @@ class Interpreter implements VisitorExpr, VisitorStmt
         }
 
         $this->environment->define($stmt->name()->lexeme(), $value);
+    }
+
+    public function visitAssignExpr(Assign $expr)
+    {
+        $value = $this->evaluate($expr->value());
+
+        $this->environment->assign($expr->name(), $value);
+
+        return $value;
     }
 
     private function evaluate(Expr $expr)

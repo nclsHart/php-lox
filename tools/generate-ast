@@ -11,6 +11,7 @@ const EXPR_DIR = __DIR__ . '/../src/Expr';
 const STMT_DIR = __DIR__ . '/../src/Stmt';
 
 defineAst(EXPR_DIR, 'Expr', [
+    'Assign   : Lox\Token name, Lox\Expr\Expr value',
     'Binary   : Lox\Expr\Expr left, Lox\Token operator, Lox\Expr\Expr right',
     'Grouping : Lox\Expr\Expr expression',
     'Literal  : value',

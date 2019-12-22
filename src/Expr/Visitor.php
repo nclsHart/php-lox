@@ -10,6 +10,8 @@ namespace Lox\Expr;
 
 interface Visitor
 {
+    public function visitAssignExpr(Assign $expr);
+
     public function visitBinaryExpr(Binary $expr);
 
     public function visitGroupingExpr(Grouping $expr);
