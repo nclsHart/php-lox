@@ -7,6 +7,7 @@ use Lox\Expr\Expr;
 use Lox\Expr\Grouping;
 use Lox\Expr\Literal;
 use Lox\Expr\Unary;
+use Lox\Expr\Variable;
 use Lox\Expr\Visitor;
 
 class AstPrinter implements Visitor
@@ -38,6 +39,11 @@ class AstPrinter implements Visitor
     public function visitUnaryExpr(Unary $expr): string
     {
         return $this->parenthesize($expr->operator()->lexeme(), $expr->right());
+    }
+
+    public function visitVariableExpr(Variable $expr)
+    {
+        return $expr->name()->lexeme();
     }
 
     private function parenthesize(string $name, Expr ...$exprs): string
