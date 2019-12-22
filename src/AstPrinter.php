@@ -2,6 +2,7 @@
 
 namespace Lox;
 
+use Lox\Expr\Assign;
 use Lox\Expr\Binary;
 use Lox\Expr\Expr;
 use Lox\Expr\Grouping;
@@ -9,6 +10,7 @@ use Lox\Expr\Literal;
 use Lox\Expr\Unary;
 use Lox\Expr\Variable;
 use Lox\Expr\Visitor;
+use Lox\Stmt\Stmt;
 
 class AstPrinter implements Visitor
 {
@@ -46,12 +48,24 @@ class AstPrinter implements Visitor
         return $expr->name()->lexeme();
     }
 
-    private function parenthesize(string $name, Expr ...$exprs): string
+    public function visitAssignExpr(Assign $expr)
+    {
+        return $this->parenthesize('=', $expr->name()->lexeme(), $expr->value());
+    }
+
+    private function parenthesize(string $name, ...$parts): string
     {
         $result = '(' . $name;
-        foreach ($exprs as $expr) {
+        foreach ($parts as $part) {
             $result .= ' ';
-            $result .= $expr->accept($this);
+
+            if ($part instanceof Expr || $part instanceof Stmt) {
+                $result .= $part->accept($this);
+            } else if ($part instanceof Token) {
+                $result .= $part->lexeme();
+            } else {
+                $result .= $part;
+            }
         }
         $result .= ')';
 
