@@ -17,4 +17,6 @@ interface Visitor
     public function visitLiteralExpr(Literal $expr);
 
     public function visitUnaryExpr(Unary $expr);
+
+    public function visitVariableExpr(Variable $expr);
 }

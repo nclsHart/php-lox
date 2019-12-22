@@ -7,14 +7,26 @@ use Lox\Expr\Expr;
 use Lox\Expr\Grouping;
 use Lox\Expr\Literal;
 use Lox\Expr\Unary;
+use Lox\Expr\Variable;
 use Lox\Expr\Visitor as VisitorExpr;
 use Lox\Stmt\ExpressionStmt;
 use Lox\Stmt\PrintStmt;
 use Lox\Stmt\Stmt;
+use Lox\Stmt\VarStmt;
 use Lox\Stmt\Visitor as VisitorStmt;
 
 class Interpreter implements VisitorExpr, VisitorStmt
 {
+    /**
+     * @var Environment
+     */
+    private $environment;
+
+    public function __construct()
+    {
+        $this->environment = new Environment();
+    }
+
     /**
      * @param Stmt[] $statements
      */
@@ -119,6 +131,11 @@ class Interpreter implements VisitorExpr, VisitorStmt
         return null;
     }
 
+    public function visitVariableExpr(Variable $expr)
+    {
+        return $this->environment->get($expr->name());
+    }
+
     public function visitExpressionStmt(ExpressionStmt $stmt): void
     {
         $this->evaluate($stmt->expression());
@@ -128,6 +145,16 @@ class Interpreter implements VisitorExpr, VisitorStmt
     {
         $value = $this->evaluate($stmt->expression());
         print $this->stringify($value) . "\n";
+    }
+
+    public function visitVarStmt(VarStmt $stmt): void
+    {
+        $value = null;
+        if ($stmt->initializer() !== null) {
+            $value = $this->evaluate($stmt->initializer());
+        }
+
+        $this->environment->define($stmt->name()->lexeme(), $value);
     }
 
     private function evaluate(Expr $expr)

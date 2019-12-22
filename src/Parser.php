@@ -7,9 +7,11 @@ use Lox\Expr\Expr;
 use Lox\Expr\Grouping;
 use Lox\Expr\Literal;
 use Lox\Expr\Unary;
+use Lox\Expr\Variable;
 use Lox\Stmt\ExpressionStmt;
 use Lox\Stmt\PrintStmt;
 use Lox\Stmt\Stmt;
+use Lox\Stmt\VarStmt;
 
 class Parser
 {
@@ -38,10 +40,25 @@ class Parser
     {
         $statements = [];
         while (!$this->isAtEnd()) {
-            $statements[] = $this->statement();
+            $statements[] = $this->declaration();
         }
 
         return $statements;
+    }
+
+    private function declaration(): Stmt
+    {
+        try {
+            if ($this->match(TokenType::VAR())) {
+                return $this->varDeclaration();
+            }
+
+            return $this->statement();
+        } catch (ParseError $error) {
+            $this->synchronize();
+
+            return null;
+        }
     }
 
     private function statement(): Stmt
@@ -59,6 +76,20 @@ class Parser
         $this->consume(TokenType::SEMICOLON(), 'Expect ";" after value.');
 
         return new PrintStmt($value);
+    }
+
+    private function varDeclaration(): Stmt
+    {
+        $name = $this->consume(TokenType::IDENTIFIER(), 'Expect variable name.');
+
+        $initializer = null;
+        if ($this->match(TokenType::EQUAL())) {
+            $initializer = $this->expression();
+        }
+
+        $this->consume(TokenType::SEMICOLON(), 'Expect ";" after variable declaration.');
+
+        return new VarStmt($name, $initializer);
     }
 
     private function expressionStatement(): Stmt
@@ -152,6 +183,10 @@ class Parser
 
         if ($this->match(TokenType::NUMBER(), TokenType::STRING())) {
             return new Literal($this->previous()->literal());
+        }
+
+        if ($this->match(TokenType::IDENTIFIER())) {
+            return new Variable($this->previous());
         }
 
         if ($this->match(TokenType::LEFT_PAREN())) {

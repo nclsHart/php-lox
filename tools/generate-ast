@@ -15,11 +15,13 @@ defineAst(EXPR_DIR, 'Expr', [
     'Grouping : Lox\Expr\Expr expression',
     'Literal  : value',
     'Unary    : Lox\Token operator, Lox\Expr\Expr right',
+    'Variable : Lox\Token name',
 ]);
 
 defineAst(STMT_DIR, 'Stmt', [
     'ExpressionStmt : Lox\Expr\Expr expression',
     'PrintStmt      : Lox\Expr\Expr expression',
+    'VarStmt        : Lox\Token name, Lox\Expr\Expr initializer',
 ]);
 
 function defineAst(string $outputDir, string $baseName, array $types): void
