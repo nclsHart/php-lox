@@ -61,7 +61,7 @@ class AstPrinter implements Visitor
 
             if ($part instanceof Expr || $part instanceof Stmt) {
                 $result .= $part->accept($this);
-            } else if ($part instanceof Token) {
+            } elseif ($part instanceof Token) {
                 $result .= $part->lexeme();
             } else {
                 $result .= $part;
