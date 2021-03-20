@@ -149,8 +149,8 @@ function writeClass(string $outputDir, string $baseName, ClassType $class): void
     if ($class->hasMethod('__construct')) {
         $constructor = $class->getMethod('__construct');
         foreach ($constructor->getParameters() as $parameter) {
-            if (null !== $parameter->getTypeHint() && !in_array($parameter->getTypeHint(), $namespace->getUses())) {
-                $namespace->addUse($parameter->getTypeHint());
+            if (null !== $parameter->getType() && !in_array($parameter->getType(), $namespace->getUses())) {
+                $namespace->addUse($parameter->getType());
             }
         }
     }
