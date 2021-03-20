@@ -5,45 +5,47 @@ namespace Lox;
 use MyCLabs\Enum\Enum;
 
 /**
- * @method static TokenType LEFT_PAREN
- * @method static TokenType RIGHT_PAREN
- * @method static TokenType LEFT_BRACE
- * @method static TokenType RIGHT_BRACE
- * @method static TokenType COMMA
- * @method static TokenType DOT
- * @method static TokenType MINUS
- * @method static TokenType PLUS
- * @method static TokenType SEMICOLON
- * @method static TokenType SLASH
- * @method static TokenType STAR
- * @method static TokenType BANG
- * @method static TokenType BANG_EQUAL
- * @method static TokenType EQUAL
- * @method static TokenType EQUAL_EQUAL
- * @method static TokenType GREATER
- * @method static TokenType GREATER_EQUAL
- * @method static TokenType LESS
- * @method static TokenType LESS_EQUAL
- * @method static TokenType IDENTIFIER
- * @method static TokenType STRING
- * @method static TokenType NUMBER
- * @method static TokenType AND
- * @method static TokenType ELSE
- * @method static TokenType FALSE
- * @method static TokenType FUN
- * @method static TokenType FOR
- * @method static TokenType IF
- * @method static TokenType NIL
- * @method static TokenType OR
- * @method static TokenType PRINT
- * @method static TokenType RETURN
- * @method static TokenType SUPER
- * @method static TokenType TCLASS
- * @method static TokenType THIS
- * @method static TokenType TRUE
- * @method static TokenType VAR
- * @method static TokenType WHILE
- * @method static TokenType EOF
+ * @psalm-immutable
+ *
+ * @method static TokenType LEFT_PAREN()
+ * @method static TokenType RIGHT_PAREN()
+ * @method static TokenType LEFT_BRACE()
+ * @method static TokenType RIGHT_BRACE()
+ * @method static TokenType COMMA()
+ * @method static TokenType DOT()
+ * @method static TokenType MINUS()
+ * @method static TokenType PLUS()
+ * @method static TokenType SEMICOLON()
+ * @method static TokenType SLASH()
+ * @method static TokenType STAR()
+ * @method static TokenType BANG()
+ * @method static TokenType BANG_EQUAL()
+ * @method static TokenType EQUAL()
+ * @method static TokenType EQUAL_EQUAL()
+ * @method static TokenType GREATER()
+ * @method static TokenType GREATER_EQUAL()
+ * @method static TokenType LESS()
+ * @method static TokenType LESS_EQUAL()
+ * @method static TokenType IDENTIFIER()
+ * @method static TokenType STRING()
+ * @method static TokenType NUMBER()
+ * @method static TokenType AND()
+ * @method static TokenType ELSE()
+ * @method static TokenType FALSE()
+ * @method static TokenType FUN()
+ * @method static TokenType FOR()
+ * @method static TokenType IF()
+ * @method static TokenType NIL()
+ * @method static TokenType OR()
+ * @method static TokenType PRINT()
+ * @method static TokenType RETURN()
+ * @method static TokenType SUPER()
+ * @method static TokenType TCLASS()
+ * @method static TokenType THIS()
+ * @method static TokenType TRUE()
+ * @method static TokenType VAR()
+ * @method static TokenType WHILE()
+ * @method static TokenType EOF()
  */
 class TokenType extends Enum
 {
@@ -95,7 +97,10 @@ class TokenType extends Enum
 
     private const EOF = 39;
 
-    public function __toString()
+    /**
+     * @psalm-pure
+     */
+    public function __toString(): string
     {
         return (string) $this->getKey();
     }

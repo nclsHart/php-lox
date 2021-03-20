@@ -4,11 +4,11 @@ namespace Lox;
 
 class Lox
 {
-    private static $interpreter;
+    private static Interpreter $interpreter;
 
-    private static $hadError = false;
+    private static bool $hadError = false;
 
-    private static $hadRuntimeError = false;
+    private static bool $hadRuntimeError = false;
 
     public function __construct()
     {

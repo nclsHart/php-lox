@@ -4,24 +4,15 @@ namespace Lox;
 
 class Token
 {
-    /**
-     * @var TokenType
-     */
-    private $type;
+    private TokenType $type;
 
-    /**
-     * @var string
-     */
-    private $lexeme;
+    private string $lexeme;
 
-    private $literal;
+    private mixed $literal;
 
-    /**
-     * @var int
-     */
-    private $line;
+    private int $line;
 
-    public function __construct(TokenType $type, string $lexeme, $literal, int $line)
+    public function __construct(TokenType $type, string $lexeme, mixed $literal, int $line)
     {
         $this->type = $type;
         $this->lexeme = $lexeme;
@@ -39,7 +30,7 @@ class Token
         return $this->lexeme;
     }
 
-    public function literal()
+    public function literal(): mixed
     {
         return $this->literal;
     }

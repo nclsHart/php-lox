@@ -4,10 +4,7 @@ namespace Lox;
 
 class Environment
 {
-    /**
-     * @var array
-     */
-    private $values = [];
+    private array $values = [];
 
     public function define(string $name, $value): void
     {

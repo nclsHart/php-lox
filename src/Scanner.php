@@ -4,30 +4,18 @@ namespace Lox;
 
 class Scanner
 {
-    /**
-     * @var string
-     */
-    private $source;
+    private string $source;
 
     /**
      * @var Token[]
      */
-    private $tokens = [];
+    private array $tokens = [];
 
-    /**
-     * @var int
-     */
-    private $start = 0;
+    private int $start = 0;
 
-    /**
-     * @var int
-     */
-    private $current = 0;
+    private int $current = 0;
 
-    /**
-     * @var int
-     */
-    private $line = 1;
+    private int $line = 1;
 
     public function __construct(string $source)
     {

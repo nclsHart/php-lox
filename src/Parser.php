@@ -19,12 +19,9 @@ class Parser
     /**
      * @var Token[]
      */
-    private $tokens;
+    private array $tokens;
 
-    /**
-     * @var int
-     */
-    private $current = 0;
+    private int $current = 0;
 
     /**
      * @param Token[] $tokens
@@ -41,13 +38,17 @@ class Parser
     {
         $statements = [];
         while (!$this->isAtEnd()) {
-            $statements[] = $this->declaration();
+            $statement = $this->declaration();
+
+            if (null !== $statement) {
+                $statements[] = $statement;
+            }
         }
 
         return $statements;
     }
 
-    private function declaration(): Stmt
+    private function declaration(): ?Stmt
     {
         try {
             if ($this->match(TokenType::VAR())) {

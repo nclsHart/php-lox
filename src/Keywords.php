@@ -4,9 +4,9 @@ namespace Lox;
 
 final class Keywords
 {
-    private static $instance;
+    private static ?self $instance = null;
 
-    private static $keywords;
+    private static array $keywords;
 
     private function __construct()
     {

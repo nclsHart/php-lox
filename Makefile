@@ -9,4 +9,7 @@ test:
 cs:
 	@vendor/bin/php-cs-fixer fix
 
-.PHONY: install test cs
+static-analysis:
+	@vendor/bin/psalm
+
+.PHONY: install test cs static-analysis

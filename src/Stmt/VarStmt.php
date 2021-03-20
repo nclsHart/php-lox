@@ -14,9 +14,9 @@ use Lox\Token;
 final class VarStmt extends Stmt
 {
     private Token $name;
-    private Expr $initializer;
+    private ?Expr $initializer;
 
-    public function __construct(Token $name, Expr $initializer)
+    public function __construct(Token $name, Expr $initializer = null)
     {
         $this->name = $name;
         $this->initializer = $initializer;
@@ -32,7 +32,7 @@ final class VarStmt extends Stmt
         return $visitor->visitVarStmt($this);
     }
 
-    public function initializer(): Expr
+    public function initializer(): ?Expr
     {
         return $this->initializer;
     }

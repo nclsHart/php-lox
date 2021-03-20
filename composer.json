@@ -18,7 +18,8 @@
         "nette/php-generator": "^3.2",
         "friendsofphp/php-cs-fixer": "^2.16",
         "phpunit/php-file-iterator": "^3.0",
-        "symfony/process": "^5.0"
+        "symfony/process": "^5.0",
+        "vimeo/psalm": "^4.6"
     },
     "autoload": {
         "psr-4": {

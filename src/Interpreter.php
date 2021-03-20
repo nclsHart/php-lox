@@ -18,10 +18,7 @@ use Lox\Stmt\Visitor as VisitorStmt;
 
 class Interpreter implements VisitorExpr, VisitorStmt
 {
-    /**
-     * @var Environment
-     */
-    private $environment;
+    private Environment $environment;
 
     public function __construct()
     {
@@ -86,11 +83,11 @@ class Interpreter implements VisitorExpr, VisitorStmt
                 return (float)$left - (float)$right;
             case TokenType::PLUS():
                 if (is_float($left) && is_float($right)) {
-                    return (float)$left + (float)$right;
+                    return $left + $right;
                 }
 
                 if (is_string($left) && is_string($right)) {
-                    return (string)$left . (string)$right;
+                    return $left . $right;
                 }
 
                 throw new RuntimeError($expr->operator(), 'Operands must be two numbers or two strings.');

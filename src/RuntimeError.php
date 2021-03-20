@@ -4,7 +4,7 @@ namespace Lox;
 
 class RuntimeError extends \RuntimeException
 {
-    private $token;
+    private Token $token;
 
     public function __construct(Token $token, string $message)
     {
