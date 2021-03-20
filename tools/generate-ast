@@ -57,7 +57,7 @@ function generateBaseClass(string $baseName): ClassType
     $method = $class->addMethod('accept');
     $method->setAbstract();
     $param = $method->addParameter('visitor');
-    $param->setTypeHint(sprintf('\Lox\%s\Visitor', $baseName));
+    $param->setType(sprintf('\Lox\%s\Visitor', $baseName));
 
     return $class;
 }
@@ -79,7 +79,7 @@ function generateVisitor(string $baseName, array $types): ClassType
         }
         $method->setVisibility('public');
         $param = $method->addParameter(strtolower($baseName));
-        $param->setTypeHint(sprintf('Lox\%s\%s', $baseName, $typeName));
+        $param->setType(sprintf('Lox\%s\%s', $baseName, $typeName));
     }
 
     return $class;
@@ -111,7 +111,7 @@ function generateType(string $baseName, string $className, array $properties = [
         // add constructor parameter and init property
         $parameter = $constructor->addParameter($propertyName);
         if (null !== $type) {
-            $parameter->setTypeHint($type);
+            $parameter->setType($type);
         }
         $constructor->addBody('$this->? = $?;', [$propertyName, $propertyName]);
 
@@ -125,7 +125,7 @@ function generateType(string $baseName, string $className, array $properties = [
         // implements accept method
         $method = $class->addMethod('accept');
         $param = $method->addParameter('visitor');
-        $param->setTypeHint(sprintf('\Lox\%s\Visitor', $baseName));
+        $param->setType(sprintf('\Lox\%s\Visitor', $baseName));
 
         if (strpos($className, $baseName)) {
             $method->addBody(sprintf('return $visitor->visit%s($this);', $className));
