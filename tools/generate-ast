@@ -107,6 +107,7 @@ function generateType(string $baseName, string $className, array $properties = [
         // add property
         $property = $class->addProperty($propertyName);
         $property->setVisibility('private');
+        $property->setType($type);
 
         // add constructor parameter and init property
         $parameter = $constructor->addParameter($propertyName);

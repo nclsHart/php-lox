@@ -13,9 +13,8 @@ use Lox\Token;
 
 final class VarStmt extends Stmt
 {
-    private $name;
-
-    private $initializer;
+    private Token $name;
+    private Expr $initializer;
 
     public function __construct(Token $name, Expr $initializer)
     {

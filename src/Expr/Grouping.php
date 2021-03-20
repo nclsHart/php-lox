@@ -10,7 +10,7 @@ namespace Lox\Expr;
 
 final class Grouping extends Expr
 {
-    private $expression;
+    private Expr $expression;
 
     public function __construct(Expr $expression)
     {

@@ -12,9 +12,8 @@ use Lox\Token;
 
 final class Assign extends Expr
 {
-    private $name;
-
-    private $value;
+    private Token $name;
+    private Expr $value;
 
     public function __construct(Token $name, Expr $value)
     {

@@ -12,7 +12,7 @@ use Lox\Token;
 
 final class Variable extends Expr
 {
-    private $name;
+    private Token $name;
 
     public function __construct(Token $name)
     {

@@ -12,7 +12,7 @@ use Lox\Expr\Expr;
 
 final class PrintStmt extends Stmt
 {
-    private $expression;
+    private Expr $expression;
 
     public function __construct(Expr $expression)
     {

@@ -12,11 +12,9 @@ use Lox\Token;
 
 final class Binary extends Expr
 {
-    private $left;
-
-    private $operator;
-
-    private $right;
+    private Expr $left;
+    private Token $operator;
+    private Expr $right;
 
     public function __construct(Expr $left, Token $operator, Expr $right)
     {

@@ -12,9 +12,8 @@ use Lox\Token;
 
 final class Unary extends Expr
 {
-    private $operator;
-
-    private $right;
+    private Token $operator;
+    private Expr $right;
 
     public function __construct(Token $operator, Expr $right)
     {
