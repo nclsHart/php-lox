@@ -5,10 +5,10 @@ $finder = PhpCsFixer\Finder::create()
     ->path(['src', 'tests', 'tools'])
 ;
 
-return PhpCsFixer\Config::create()
-    ->setRules([
+$config = new PhpCsFixer\Config();
+
+return $config->setRules([
         '@PSR2' => true,
-        'array_syntax' => ['syntax' => 'short'],
     ])
     ->setFinder($finder)
 ;
