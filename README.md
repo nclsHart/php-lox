@@ -13,11 +13,11 @@ Based on Bob Nystrom's great book [Crafting Interpreters](https://github.com/mun
 Run the following command after cloning the repository:
 
 ```shell
-$ make install
+make install
 ```
 
 ## Running tests
 
 ```shell
-$ make test
+make test
 ```
