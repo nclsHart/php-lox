@@ -25,5 +25,8 @@
         "psr-4": {
             "Lox\\": "src/"
         }
+    },
+    "config": {
+        "sort-packages": true
     }
 }
