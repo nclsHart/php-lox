@@ -17,11 +17,13 @@ class Lox
 
     public function runFile(string $file): void
     {
-        if (!is_file($file)) {
+        $source = file_get_contents($file);
+
+        if (false === $source) {
             throw new \InvalidArgumentException('File does not exist');
         }
 
-        $this->run(file_get_contents($file));
+        $this->run($source);
 
         if (self::$hadError) {
             exit(65);
@@ -36,6 +38,11 @@ class Lox
     {
         while (true) {
             $line = readline('> ');
+
+            if (false === $line) {
+                return;
+            }
+
             $this->run($line);
 
             self::$hadError = false;

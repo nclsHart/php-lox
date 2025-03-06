@@ -6,6 +6,7 @@ use MyCLabs\Enum\Enum;
 
 /**
  * @psalm-immutable
+ * @extends Enum<int>
  *
  * @method static TokenType LEFT_PAREN()
  * @method static TokenType RIGHT_PAREN()

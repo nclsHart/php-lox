@@ -5,6 +5,10 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Lox\Lox;
 
+if (! isset($_SERVER['argv'])) {
+    throw new \InvalidArgumentException();
+}
+
 $lox = new Lox();
 
 $args = $_SERVER['argv'];
