@@ -1,13 +1,12 @@
 <?php
 
 use Lox\Scanner;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ScannerTest extends TestCase
 {
-    /**
-     * @dataProvider provideSource
-     */
+    #[DataProvider('provideSource')]
     public function test_scan_tokens(string $source, array $expectedTokens): void
     {
         $scanner = new Scanner($source);
@@ -19,7 +18,7 @@ class ScannerTest extends TestCase
         }
     }
 
-    public function provideSource(): array
+    public static function provideSource(): array
     {
         return [
             'single_character_tokens' => [

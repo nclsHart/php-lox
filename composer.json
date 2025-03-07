@@ -16,8 +16,8 @@
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.4",
         "nette/php-generator": "^4.1",
-        "phpunit/php-file-iterator": "^3.0",
-        "phpunit/phpunit": "^9.5",
+        "phpunit/php-file-iterator": "^6.0",
+        "phpunit/phpunit": "^12.0",
         "symfony/process": "^5.0",
         "vimeo/psalm": "^6.8"
     },

@@ -1,5 +1,6 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use SebastianBergmann\FileIterator\Factory;
 use Symfony\Component\Process\Process;
@@ -8,9 +9,7 @@ class LoxTest extends TestCase
 {
     const FIXTURES_DIR = __DIR__ . '/lox';
 
-    /**
-     * @dataProvider provideFiles
-     */
+    #[DataProvider('provideFiles')]
     public function test_lox(SplFileInfo $file): void
     {
         $process = Process::fromShellCommandline(sprintf(__DIR__ . '/../bin/php-lox %s', $file->getPathname()));
@@ -55,16 +54,16 @@ class LoxTest extends TestCase
         }
     }
 
-    public function provideFiles(): iterable
+    public static function provideFiles(): iterable
     {
         $files = (new Factory())->getFileIterator(__DIR__ . '/lox', '.lox');
 
         foreach ($files as $file) {
-            yield $this->extractDataSetName($file) => [$file];
+            yield LoxTest::extractDataSetName($file) => [$file];
         }
     }
 
-    private function extractDataSetName(SplFileInfo $file): string
+    private static function extractDataSetName(SplFileInfo $file): string
     {
         return trim(
             str_replace(self::FIXTURES_DIR, '', $file->getPathname()),
