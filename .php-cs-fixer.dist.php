@@ -2,7 +2,7 @@
 
 $finder = PhpCsFixer\Finder::create()
     ->in(__DIR__)
-    ->path(['src', 'tests', 'tools'])
+    ->path(['bin', 'src', 'tests', 'tools'])
 ;
 
 $config = new PhpCsFixer\Config();
