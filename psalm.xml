@@ -9,6 +9,7 @@
 >
     <projectFiles>
         <file name="bin/php-lox" />
+        <file name="tools/generate-ast" />
         <directory name="src" />
         <ignoreFiles>
             <directory name="vendor" />

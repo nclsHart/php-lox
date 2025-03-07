@@ -16,7 +16,7 @@ final class VarStmt extends Stmt
     private Token $name;
     private ?Expr $initializer;
 
-    public function __construct(Token $name, Expr $initializer = null)
+    public function __construct(Token $name, ?Expr $initializer)
     {
         $this->name = $name;
         $this->initializer = $initializer;
@@ -27,13 +27,13 @@ final class VarStmt extends Stmt
         return $this->name;
     }
 
-    public function accept(Visitor $visitor)
-    {
-        return $visitor->visitVarStmt($this);
-    }
-
     public function initializer(): ?Expr
     {
         return $this->initializer;
+    }
+
+    public function accept(Visitor $visitor)
+    {
+        return $visitor->visitVarStmt($this);
     }
 }

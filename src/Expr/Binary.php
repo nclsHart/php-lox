@@ -28,11 +28,6 @@ final class Binary extends Expr
         return $this->left;
     }
 
-    public function accept(Visitor $visitor)
-    {
-        return $visitor->visitBinaryExpr($this);
-    }
-
     public function operator(): Token
     {
         return $this->operator;
@@ -41,5 +36,10 @@ final class Binary extends Expr
     public function right(): Expr
     {
         return $this->right;
+    }
+
+    public function accept(Visitor $visitor)
+    {
+        return $visitor->visitBinaryExpr($this);
     }
 }

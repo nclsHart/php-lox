@@ -4,6 +4,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Nette\PhpGenerator\ClassType;
+use Nette\PhpGenerator\InterfaceType;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\PsrPrinter;
 
@@ -22,7 +23,7 @@ defineAst(EXPR_DIR, 'Expr', [
 defineAst(STMT_DIR, 'Stmt', [
     'ExpressionStmt : Lox\Expr\Expr expression',
     'PrintStmt      : Lox\Expr\Expr expression',
-    'VarStmt        : Lox\Token name, Lox\Expr\Expr initializer',
+    'VarStmt        : Lox\Token name, ?Lox\Expr\Expr initializer',
 ]);
 
 function defineAst(string $outputDir, string $baseName, array $types): void
@@ -62,10 +63,9 @@ function generateBaseClass(string $baseName): ClassType
     return $class;
 }
 
-function generateVisitor(string $baseName, array $types): ClassType
+function generateVisitor(string $baseName, array $types): InterfaceType
 {
-    $class = new ClassType('Visitor');
-    $class->setType('interface');
+    $class = new InterfaceType('Visitor');
 
     foreach ($types as $type) {
         $parts = explode(':', $type);
@@ -88,7 +88,7 @@ function generateVisitor(string $baseName, array $types): ClassType
 function generateType(string $baseName, string $className, array $properties = []): ClassType
 {
     $class = new ClassType($className);
-    $class->addExtend(sprintf('\Lox\%s\%1$s', $baseName));
+    $class->setExtends(sprintf('\Lox\%s\%1$s', $baseName));
     $class->setFinal();
 
     $constructor = $class->addMethod('__construct');
@@ -122,23 +122,23 @@ function generateType(string $baseName, string $className, array $properties = [
             $getter->setReturnType($type);
         }
         $getter->addBody('return $this->?;', [$propertyName]);
+    }
 
-        // implements accept method
-        $method = $class->addMethod('accept');
-        $param = $method->addParameter('visitor');
-        $param->setType(sprintf('\Lox\%s\Visitor', $baseName));
+    // implements accept method
+    $method = $class->addMethod('accept');
+    $param = $method->addParameter('visitor');
+    $param->setType(sprintf('\Lox\%s\Visitor', $baseName));
 
-        if (strpos($className, $baseName)) {
-            $method->addBody(sprintf('return $visitor->visit%s($this);', $className));
-        } else {
-            $method->addBody(sprintf('return $visitor->visit%s%s($this);', $className, $baseName));
-        }
+    if (strpos($className, $baseName)) {
+        $method->addBody(sprintf('return $visitor->visit%s($this);', $className));
+    } else {
+        $method->addBody(sprintf('return $visitor->visit%s%s($this);', $className, $baseName));
     }
 
     return $class;
 }
 
-function writeClass(string $outputDir, string $baseName, ClassType $class): void
+function writeClass(string $outputDir, string $baseName, ClassType|InterfaceType $class): void
 {
     $file = new PhpFile();
     $file->addComment('This file is auto-generated.');
@@ -147,17 +147,22 @@ function writeClass(string $outputDir, string $baseName, ClassType $class): void
     $namespace = $file->addNamespace(sprintf('Lox\%s', $baseName));
     $namespace->add($class);
 
-    if ($class->hasMethod('__construct')) {
+    if ($class instanceof ClassType && $class->hasMethod('__construct')) {
         $constructor = $class->getMethod('__construct');
         foreach ($constructor->getParameters() as $parameter) {
             if (null !== $parameter->getType() && !in_array($parameter->getType(), $namespace->getUses())) {
-                $namespace->addUse($parameter->getType());
+                $namespace->addUse((string) $parameter->getType());
             }
         }
     }
 
+    $className = $class->getName();
+    if (null === $className) {
+        throw new \InvalidArgumentException('Class or Interface must have a name.');
+    }
+
     file_put_contents(
-        sprintf('%s/%s.php', $outputDir, $class->getName()),
+        sprintf('%s/%s.php', $outputDir, $className),
         (new PsrPrinter)->printFile($file)
     );
 }

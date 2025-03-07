@@ -299,7 +299,7 @@ class Parser
                 case TokenType::WHILE():
                 case TokenType::PRINT():
                 case TokenType::RETURN():
-                  return;
+                    return;
             }
 
             $this->advance();

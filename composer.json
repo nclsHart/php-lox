@@ -15,7 +15,7 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.4",
-        "nette/php-generator": "^3.2",
+        "nette/php-generator": "^4.1",
         "phpunit/php-file-iterator": "^3.0",
         "phpunit/phpunit": "^9.5",
         "symfony/process": "^5.0",

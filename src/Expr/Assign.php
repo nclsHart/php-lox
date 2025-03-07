@@ -26,13 +26,13 @@ final class Assign extends Expr
         return $this->name;
     }
 
-    public function accept(Visitor $visitor)
-    {
-        return $visitor->visitAssignExpr($this);
-    }
-
     public function value(): Expr
     {
         return $this->value;
+    }
+
+    public function accept(Visitor $visitor)
+    {
+        return $visitor->visitAssignExpr($this);
     }
 }
