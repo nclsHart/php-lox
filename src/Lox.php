@@ -56,7 +56,7 @@ class Lox
 
     public static function parseError(Token $token, string $message): void
     {
-        if (TokenType::EOF() === $token->type()) {
+        if (TokenType::EOF === $token->type()) {
             self::report($token->line(), ' at end', $message);
 
             return;

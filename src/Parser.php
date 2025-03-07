@@ -51,7 +51,7 @@ class Parser
     private function declaration(): ?Stmt
     {
         try {
-            if ($this->match(TokenType::VAR())) {
+            if ($this->match(TokenType::VAR)) {
                 return $this->varDeclaration();
             }
 
@@ -65,7 +65,7 @@ class Parser
 
     private function statement(): Stmt
     {
-        if ($this->match(TokenType::PRINT())) {
+        if ($this->match(TokenType::PRINT)) {
             return $this->printStatement();
         }
 
@@ -75,21 +75,21 @@ class Parser
     private function printStatement(): Stmt
     {
         $value = $this->expression();
-        $this->consume(TokenType::SEMICOLON(), 'Expect ";" after value.');
+        $this->consume(TokenType::SEMICOLON, 'Expect ";" after value.');
 
         return new PrintStmt($value);
     }
 
     private function varDeclaration(): Stmt
     {
-        $name = $this->consume(TokenType::IDENTIFIER(), 'Expect variable name.');
+        $name = $this->consume(TokenType::IDENTIFIER, 'Expect variable name.');
 
         $initializer = null;
-        if ($this->match(TokenType::EQUAL())) {
+        if ($this->match(TokenType::EQUAL)) {
             $initializer = $this->expression();
         }
 
-        $this->consume(TokenType::SEMICOLON(), 'Expect ";" after variable declaration.');
+        $this->consume(TokenType::SEMICOLON, 'Expect ";" after variable declaration.');
 
         return new VarStmt($name, $initializer);
     }
@@ -97,7 +97,7 @@ class Parser
     private function expressionStatement(): Stmt
     {
         $expr = $this->expression();
-        $this->consume(TokenType::SEMICOLON(), 'Expect ";" after expression.');
+        $this->consume(TokenType::SEMICOLON, 'Expect ";" after expression.');
 
         return new ExpressionStmt($expr);
     }
@@ -106,7 +106,7 @@ class Parser
     {
         $expr = $this->equality();
 
-        if ($this->match(TokenType::EQUAL())) {
+        if ($this->match(TokenType::EQUAL)) {
             $equals = $this->previous();
             $value = $this->assignment();
 
@@ -129,7 +129,7 @@ class Parser
     {
         $expr = $this->comparison();
 
-        while ($this->match(TokenType::BANG_EQUAL(), TokenType::EQUAL_EQUAL())) {
+        while ($this->match(TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL)) {
             $operator = $this->previous();
             $right = $this->comparison();
             $expr = new Binary($expr, $operator, $right);
@@ -142,7 +142,7 @@ class Parser
     {
         $expr = $this->addition();
 
-        while ($this->match(TokenType::GREATER(), TokenType::GREATER_EQUAL(), TokenType::LESS(), TokenType::LESS_EQUAL())) {
+        while ($this->match(TokenType::GREATER, TokenType::GREATER_EQUAL, TokenType::LESS, TokenType::LESS_EQUAL)) {
             $operator = $this->previous();
             $right = $this->addition();
             $expr = new Binary($expr, $operator, $right);
@@ -155,7 +155,7 @@ class Parser
     {
         $expr = $this->multiplication();
 
-        while ($this->match(TokenType::MINUS(), TokenType::PLUS())) {
+        while ($this->match(TokenType::MINUS, TokenType::PLUS)) {
             $operator = $this->previous();
             $right = $this->multiplication();
             $expr = new Binary($expr, $operator, $right);
@@ -168,7 +168,7 @@ class Parser
     {
         $expr = $this->unary();
 
-        while ($this->match(TokenType::SLASH(), TokenType::STAR())) {
+        while ($this->match(TokenType::SLASH, TokenType::STAR)) {
             $operator = $this->previous();
             $right = $this->unary();
             $expr = new Binary($expr, $operator, $right);
@@ -179,7 +179,7 @@ class Parser
 
     private function unary(): Expr
     {
-        if ($this->match(TokenType::BANG(), TokenType::MINUS())) {
+        if ($this->match(TokenType::BANG, TokenType::MINUS)) {
             $operator = $this->previous();
             $right = $this->unary();
 
@@ -191,27 +191,27 @@ class Parser
 
     private function primary(): Expr
     {
-        if ($this->match(TokenType::FALSE())) {
+        if ($this->match(TokenType::FALSE)) {
             return new Literal(false);
         }
-        if ($this->match(TokenType::TRUE())) {
+        if ($this->match(TokenType::TRUE)) {
             return new Literal(true);
         }
-        if ($this->match(TokenType::NIL())) {
+        if ($this->match(TokenType::NIL)) {
             return new Literal(null);
         }
 
-        if ($this->match(TokenType::NUMBER(), TokenType::STRING())) {
+        if ($this->match(TokenType::NUMBER, TokenType::STRING)) {
             return new Literal($this->previous()->literal());
         }
 
-        if ($this->match(TokenType::IDENTIFIER())) {
+        if ($this->match(TokenType::IDENTIFIER)) {
             return new Variable($this->previous());
         }
 
-        if ($this->match(TokenType::LEFT_PAREN())) {
+        if ($this->match(TokenType::LEFT_PAREN)) {
             $expr = $this->expression();
-            $this->consume(TokenType::RIGHT_PAREN(), 'Expect ")" after expression.');
+            $this->consume(TokenType::RIGHT_PAREN, 'Expect ")" after expression.');
 
             return new Grouping($expr);
         }
@@ -252,7 +252,7 @@ class Parser
 
     private function isAtEnd(): bool
     {
-        return $this->peek()->type() == TokenType::EOF();
+        return $this->peek()->type() == TokenType::EOF;
     }
 
     private function peek(): Token
@@ -286,19 +286,19 @@ class Parser
         $this->advance();
 
         while (!$this->isAtEnd()) {
-            if (TokenType::SEMICOLON() === $this->previous()->type()) {
+            if (TokenType::SEMICOLON === $this->previous()->type()) {
                 return;
             }
 
             switch ($this->peek()->type()) {
-                case TokenType::TCLASS():
-                case TokenType::FUN():
-                case TokenType::VAR():
-                case TokenType::FOR():
-                case TokenType::IF():
-                case TokenType::WHILE():
-                case TokenType::PRINT():
-                case TokenType::RETURN():
+                case TokenType::TCLASS:
+                case TokenType::FUN:
+                case TokenType::VAR:
+                case TokenType::FOR:
+                case TokenType::IF:
+                case TokenType::WHILE:
+                case TokenType::PRINT:
+                case TokenType::RETURN:
                     return;
             }
 

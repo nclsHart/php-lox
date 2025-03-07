@@ -42,6 +42,6 @@ class Token
 
     public function __toString(): string
     {
-        return sprintf('%s %s %s', $this->type->getKey(), $this->lexeme, null === $this->literal ? 'null' : $this->literal);
+        return sprintf('%s %s %s', $this->type->name, $this->lexeme, null === $this->literal ? 'null' : $this->literal);
     }
 }

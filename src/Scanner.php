@@ -29,7 +29,7 @@ class Scanner
             $this->scanToken();
         }
 
-        $this->tokens[] = new Token(TokenType::EOF(), '', null, $this->line);
+        $this->tokens[] = new Token(TokenType::EOF, '', null, $this->line);
 
         return $this->tokens;
     }
@@ -40,46 +40,46 @@ class Scanner
 
         switch ($char) {
             case '(':
-                $this->addToken(TokenType::LEFT_PAREN());
+                $this->addToken(TokenType::LEFT_PAREN);
                 break;
             case ')':
-                $this->addToken(TokenType::RIGHT_PAREN());
+                $this->addToken(TokenType::RIGHT_PAREN);
                 break;
             case '{':
-                $this->addToken(TokenType::LEFT_BRACE());
+                $this->addToken(TokenType::LEFT_BRACE);
                 break;
             case '}':
-                $this->addToken(TokenType::RIGHT_BRACE());
+                $this->addToken(TokenType::RIGHT_BRACE);
                 break;
             case ',':
-                $this->addToken(TokenType::COMMA());
+                $this->addToken(TokenType::COMMA);
                 break;
             case '.':
-                $this->addToken(TokenType::DOT());
+                $this->addToken(TokenType::DOT);
                 break;
             case '-':
-                $this->addToken(TokenType::MINUS());
+                $this->addToken(TokenType::MINUS);
                 break;
             case '+':
-                $this->addToken(TokenType::PLUS());
+                $this->addToken(TokenType::PLUS);
                 break;
             case ';':
-                $this->addToken(TokenType::SEMICOLON());
+                $this->addToken(TokenType::SEMICOLON);
                 break;
             case '*':
-                $this->addToken(TokenType::STAR());
+                $this->addToken(TokenType::STAR);
                 break;
             case '!':
-                $this->addToken($this->match('=') ? TokenType::BANG_EQUAL() : TokenType::BANG());
+                $this->addToken($this->match('=') ? TokenType::BANG_EQUAL : TokenType::BANG);
                 break;
             case '=':
-                $this->addToken($this->match('=') ? TokenType::EQUAL_EQUAL() : TokenType::EQUAL());
+                $this->addToken($this->match('=') ? TokenType::EQUAL_EQUAL : TokenType::EQUAL);
                 break;
             case '<':
-                $this->addToken($this->match('=') ? TokenType::LESS_EQUAL() : TokenType::LESS());
+                $this->addToken($this->match('=') ? TokenType::LESS_EQUAL : TokenType::LESS);
                 break;
             case '>':
-                $this->addToken($this->match('=') ? TokenType::GREATER_EQUAL() : TokenType::GREATER());
+                $this->addToken($this->match('=') ? TokenType::GREATER_EQUAL : TokenType::GREATER);
                 break;
             case '/':
                 if ($this->match('/')) {
@@ -87,7 +87,7 @@ class Scanner
                         $this->advance();
                     }
                 } else {
-                    $this->addToken(TokenType::SLASH());
+                    $this->addToken(TokenType::SLASH);
                 }
                 break;
             case ' ':
@@ -182,7 +182,7 @@ class Scanner
 
         // Trim the surrounding quotes.
         $value = substr($this->source, $this->start + 1, ($this->current - $this->start - 2));
-        $this->addToken(TokenType::STRING(), $value);
+        $this->addToken(TokenType::STRING, $value);
     }
 
     private function charAt(int $position): string
@@ -211,7 +211,7 @@ class Scanner
             }
         }
 
-        $this->addToken(TokenType::NUMBER(), (float) substr($this->source, $this->start, $this->current - $this->start));
+        $this->addToken(TokenType::NUMBER, (float) substr($this->source, $this->start, $this->current - $this->start));
     }
 
     private function peekNext(): string
@@ -233,7 +233,7 @@ class Scanner
 
         $type = Keywords::getInstance()->get($text);
         if (null === $type) {
-            $type = TokenType::IDENTIFIER();
+            $type = TokenType::IDENTIFIER;
         }
         $this->addToken($type);
     }

@@ -14,13 +14,4 @@
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
-
-    <issueHandlers>
-        <ImpureVariable>
-            <!-- $this usages in Enum point themselves to an immutable instance -->
-            <errorLevel type="suppress">
-                <file name="src/TokenType.php"/>
-            </errorLevel>
-        </ImpureVariable>
-    </issueHandlers>
 </psalm>

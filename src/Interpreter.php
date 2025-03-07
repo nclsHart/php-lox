@@ -63,26 +63,26 @@ class Interpreter implements VisitorExpr, VisitorStmt
         $right = $this->evaluate($expr->right());
 
         switch ($expr->operator()->type()) {
-            case TokenType::BANG_EQUAL():
+            case TokenType::BANG_EQUAL:
                 return !$this->isEqual($left, $right);
-            case TokenType::EQUAL_EQUAL():
+            case TokenType::EQUAL_EQUAL:
                 return $this->isEqual($left, $right);
-            case TokenType::GREATER():
+            case TokenType::GREATER:
                 $this->checkNumberOperands($expr->operator(), $left, $right);
                 return (float)$left > (float)$right;
-            case TokenType::GREATER_EQUAL():
+            case TokenType::GREATER_EQUAL:
                 $this->checkNumberOperands($expr->operator(), $left, $right);
                 return (float)$left >= (float)$right;
-            case TokenType::LESS():
+            case TokenType::LESS:
                 $this->checkNumberOperands($expr->operator(), $left, $right);
                 return (float)$left < (float)$right;
-            case TokenType::LESS_EQUAL():
+            case TokenType::LESS_EQUAL:
                 $this->checkNumberOperands($expr->operator(), $left, $right);
                 return (float)$left <= (float)$right;
-            case TokenType::MINUS():
+            case TokenType::MINUS:
                 $this->checkNumberOperands($expr->operator(), $left, $right);
                 return (float)$left - (float)$right;
-            case TokenType::PLUS():
+            case TokenType::PLUS:
                 if (is_float($left) && is_float($right)) {
                     return $left + $right;
                 }
@@ -92,10 +92,10 @@ class Interpreter implements VisitorExpr, VisitorStmt
                 }
 
                 throw new RuntimeError($expr->operator(), 'Operands must be two numbers or two strings.');
-            case TokenType::SLASH():
+            case TokenType::SLASH:
                 $this->checkNumberOperands($expr->operator(), $left, $right);
                 return (float)$left / (float)$right;
-            case TokenType::STAR():
+            case TokenType::STAR:
                 $this->checkNumberOperands($expr->operator(), $left, $right);
                 return (float)$left * (float)$right;
         }
@@ -122,9 +122,9 @@ class Interpreter implements VisitorExpr, VisitorStmt
         $right = $this->evaluate($expr->right());
 
         switch ($expr->operator()->type()) {
-            case TokenType::BANG():
+            case TokenType::BANG:
                 return !$this->isTruthy($right);
-            case TokenType::MINUS():
+            case TokenType::MINUS:
                 $this->checkNumberOperand($expr->operator(), $right);
                 return -(float)$right;
         }
