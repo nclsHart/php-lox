@@ -7,7 +7,7 @@ use Symfony\Component\Process\Process;
 
 class LoxTest extends TestCase
 {
-    const FIXTURES_DIR = __DIR__ . '/lox';
+    public const FIXTURES_DIR = __DIR__ . '/lox';
 
     #[DataProvider('provideFiles')]
     public function test_lox(SplFileInfo $file): void
