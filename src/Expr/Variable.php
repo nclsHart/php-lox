@@ -24,6 +24,7 @@ final class Variable extends Expr
         return $this->name;
     }
 
+    #[\Override]
     public function accept(Visitor $visitor)
     {
         return $visitor->visitVariableExpr($this);

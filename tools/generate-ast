@@ -126,6 +126,7 @@ function generateType(string $baseName, string $className, array $properties = [
 
     // implements accept method
     $method = $class->addMethod('accept');
+    $method->addAttribute('Override');
     $param = $method->addParameter('visitor');
     $param->setType(sprintf('\Lox\%s\Visitor', $baseName));
 

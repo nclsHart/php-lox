@@ -56,6 +56,7 @@ class Interpreter implements VisitorExpr, VisitorStmt
         return (string)$object;
     }
 
+    #[\Override]
     public function visitBinaryExpr(Binary $expr)
     {
         $left = $this->evaluate($expr->left());
@@ -103,16 +104,19 @@ class Interpreter implements VisitorExpr, VisitorStmt
         return null;
     }
 
+    #[\Override]
     public function visitGroupingExpr(Grouping $expr)
     {
         return $this->evaluate($expr->expression());
     }
 
+    #[\Override]
     public function visitLiteralExpr(Literal $expr)
     {
         return $expr->value();
     }
 
+    #[\Override]
     public function visitUnaryExpr(Unary $expr)
     {
         $right = $this->evaluate($expr->right());
@@ -129,22 +133,26 @@ class Interpreter implements VisitorExpr, VisitorStmt
         return null;
     }
 
+    #[\Override]
     public function visitVariableExpr(Variable $expr)
     {
         return $this->environment->get($expr->name());
     }
 
+    #[\Override]
     public function visitExpressionStmt(ExpressionStmt $stmt): void
     {
         $this->evaluate($stmt->expression());
     }
 
+    #[\Override]
     public function visitPrintStmt(PrintStmt $stmt): void
     {
         $value = $this->evaluate($stmt->expression());
         print $this->stringify($value) . "\n";
     }
 
+    #[\Override]
     public function visitVarStmt(VarStmt $stmt): void
     {
         $value = null;
@@ -155,6 +163,7 @@ class Interpreter implements VisitorExpr, VisitorStmt
         $this->environment->define($stmt->name()->lexeme(), $value);
     }
 
+    #[\Override]
     public function visitAssignExpr(Assign $expr)
     {
         $value = $this->evaluate($expr->value());

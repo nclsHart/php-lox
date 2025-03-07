@@ -22,6 +22,7 @@ final class Literal extends Expr
         return $this->value;
     }
 
+    #[\Override]
     public function accept(Visitor $visitor)
     {
         return $visitor->visitLiteralExpr($this);

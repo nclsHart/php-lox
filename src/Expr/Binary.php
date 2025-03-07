@@ -38,6 +38,7 @@ final class Binary extends Expr
         return $this->right;
     }
 
+    #[\Override]
     public function accept(Visitor $visitor)
     {
         return $visitor->visitBinaryExpr($this);

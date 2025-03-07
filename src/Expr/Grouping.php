@@ -22,6 +22,7 @@ final class Grouping extends Expr
         return $this->expression;
     }
 
+    #[\Override]
     public function accept(Visitor $visitor)
     {
         return $visitor->visitGroupingExpr($this);

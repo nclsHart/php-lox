@@ -31,6 +31,7 @@ final class Assign extends Expr
         return $this->value;
     }
 
+    #[\Override]
     public function accept(Visitor $visitor)
     {
         return $visitor->visitAssignExpr($this);

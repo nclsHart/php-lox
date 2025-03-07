@@ -24,6 +24,7 @@ final class ExpressionStmt extends Stmt
         return $this->expression;
     }
 
+    #[\Override]
     public function accept(Visitor $visitor)
     {
         return $visitor->visitExpressionStmt($this);

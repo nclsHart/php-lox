@@ -32,6 +32,7 @@ final class VarStmt extends Stmt
         return $this->initializer;
     }
 
+    #[\Override]
     public function accept(Visitor $visitor)
     {
         return $visitor->visitVarStmt($this);
