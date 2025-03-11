@@ -20,6 +20,7 @@ defineAst(EXPR_DIR, 'Expr', [
     'Variable : Lox\Token name',
 ]);
 
+// Stmt classes must have Stmt suffix to be valid
 defineAst(STMT_DIR, 'Stmt', [
     'ExpressionStmt : Lox\Expr\Expr expression',
     'PrintStmt      : Lox\Expr\Expr expression',
@@ -71,9 +72,10 @@ function generateVisitor(string $baseName, array $types): InterfaceType
         $parts = explode(':', $type);
         $typeName = trim($parts[0]);
 
-        // because Stmt classes already have Stmt suffix
-        if (strpos($typeName, $baseName)) {
+        if ('Stmt' === $baseName) {
+            // because Stmt classes already have Stmt suffix
             $method = $class->addMethod(sprintf('visit%s', $typeName));
+            $method->setReturnType('void');
         } else {
             $method = $class->addMethod(sprintf('visit%s%s', $typeName, $baseName));
         }

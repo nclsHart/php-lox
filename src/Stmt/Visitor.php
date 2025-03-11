@@ -10,9 +10,9 @@ namespace Lox\Stmt;
 
 interface Visitor
 {
-    public function visitExpressionStmt(ExpressionStmt $stmt);
+    public function visitExpressionStmt(ExpressionStmt $stmt): void;
 
-    public function visitPrintStmt(PrintStmt $stmt);
+    public function visitPrintStmt(PrintStmt $stmt): void;
 
-    public function visitVarStmt(VarStmt $stmt);
+    public function visitVarStmt(VarStmt $stmt): void;
 }
