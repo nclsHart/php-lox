@@ -14,6 +14,11 @@ class LoxTest extends TestCase
      */
     private array $expectedOutputs = [];
 
+    /**
+     * @var list<string>
+     */
+    private array $expectedErrors = [];
+
     public const string FIXTURES_DIR = __DIR__ . '/lox';
 
     #[DataProvider('provideFiles')]
@@ -30,14 +35,15 @@ class LoxTest extends TestCase
         $lineNum = 1;
         while ($line = fgets($resource)) {
             $this->collectExpectedOutputs($line, $lineNum);
+            $this->collectExpectedErrors($line);
 
             $lineNum++;
         }
         fclose($resource);
 
-        $output = $process->getOutput();
+        $this->assertExpectedErrors($process->getErrorOutput());
+        $this->assertExpectedOutputs($process->getOutput());
 
-        $this->assertExpectedOutputs($output);
     }
 
     /**
@@ -74,6 +80,25 @@ class LoxTest extends TestCase
         }
     }
 
+    private function collectExpectedErrors(string $line): void
+    {
+        $matches = [];
+        preg_match('#// \[line (?P<line>\d+)] (?P<message>Error.*)#', $line, $matches);
+
+        if (!empty($matches)) {
+            $this->expectedErrors[] = sprintf('[%s] %s', $matches['line'], $matches['message']);
+        }
+
+        /**
+         * // If we expect a compile error, it should exit with EX_DATAERR.
+         * _expectedExitCode = 65;
+         * _expectations++;
+         * }
+         * continue;
+         * }
+         */
+    }
+
     private function assertExpectedOutputs($output): void
     {
         $outputLines = explode("\n", $output);
@@ -97,5 +122,36 @@ class LoxTest extends TestCase
         if ($index < count($this->expectedOutputs)) {
             $this->fail(sprintf('Missing expected output "%s" on line %s.', $this->expectedOutputs[$index]->output, $this->expectedOutputs[$index]->line));
         }
+    }
+
+    private function assertExpectedErrors(string $errorOutput): void
+    {
+        $errorLines = explode("\n", $errorOutput);
+        array_pop($errorLines);
+
+        /**
+         * @var list<string> $foundErrors
+         */
+        $foundErrors = [];
+        foreach ($errorLines as $errorLine) {
+            $matches = [];
+            preg_match('#\[line (?P<line>\d+)] (?P<message>Error.*)#', $errorLine, $matches);
+
+            if (!empty($matches)) {
+                $error = sprintf('[%s] %s', $matches['line'], $matches['message']);
+
+                $contains = in_array($error, $this->expectedErrors, true);
+                if ($contains) {
+                    $foundErrors[] = $error;
+                }
+
+                $this->assertTrue($contains, sprintf('Unexpected error: %s', $errorLine));
+            } elseif ($errorLine != "") {
+                $this->fail(sprintf('Unexpected output on stderr: %s', $errorLine));
+            }
+        }
+
+        $missingErrors = array_diff($this->expectedErrors, $foundErrors);
+        $this->assertEmpty($missingErrors, sprintf('Missing expected errors: %s', implode(', ', $missingErrors)));
     }
 }
