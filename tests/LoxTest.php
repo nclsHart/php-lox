@@ -19,6 +19,8 @@ class LoxTest extends TestCase
      */
     private array $expectedErrors = [];
 
+    private ?string $expectedRuntimeError = null;
+
     public const string FIXTURES_DIR = __DIR__ . '/lox';
 
     #[DataProvider('provideFiles')]
@@ -36,14 +38,20 @@ class LoxTest extends TestCase
         while ($line = fgets($resource)) {
             $this->collectExpectedOutputs($line, $lineNum);
             $this->collectExpectedErrors($line);
+            $this->collectExpectedRuntimeError($line, $lineNum);
 
             $lineNum++;
         }
         fclose($resource);
 
-        $this->assertExpectedErrors($process->getErrorOutput());
-        $this->assertExpectedOutputs($process->getOutput());
+        $errorLines = $this->splitOutput($process->getErrorOutput());
+        if (null !== $this->expectedRuntimeError) {
+            $this->assertRuntimeError($errorLines);
+        } else {
+            $this->assertExpectedErrors($errorLines);
+        }
 
+        $this->assertExpectedOutputs($process->getOutput());
     }
 
     /**
@@ -52,7 +60,7 @@ class LoxTest extends TestCase
     public static function provideFiles(): iterable
     {
         /**
-         * @psalm-suppress InternalClass InternalMethod
+         * @psalm-suppress InternalClass
          * @psalm-suppress InternalMethod
          */
         $files = (new Factory())->getFileIterator(__DIR__ . '/lox', '.lox');
@@ -90,13 +98,20 @@ class LoxTest extends TestCase
         }
     }
 
-    private function assertExpectedOutputs($output): void
+    private function collectExpectedRuntimeError(string $line, int $lineNum): void
     {
-        $outputLines = explode("\n", $output);
-        array_pop($outputLines);
+        $matches = [];
+        preg_match('#// expect runtime error: (?P<message>.+)#', $line, $matches);
 
+        if (!empty($matches)) {
+            $this->expectedRuntimeError = sprintf('%s [line %s]', $matches['message'], $lineNum);
+        }
+    }
+
+    private function assertExpectedOutputs(string $output): void
+    {
         $index = 0;
-        foreach ($outputLines as $outputLine) {
+        foreach ($this->splitOutput($output) as $outputLine) {
             if ($index >= count($this->expectedOutputs)) {
                 $this->fail(sprintf('Got output "%s" when none was expected.', $outputLine));
             }
@@ -115,11 +130,8 @@ class LoxTest extends TestCase
         }
     }
 
-    private function assertExpectedErrors(string $errorOutput): void
+    private function assertExpectedErrors(array $errorLines): void
     {
-        $errorLines = explode("\n", $errorOutput);
-        array_pop($errorLines);
-
         /**
          * @var list<string> $foundErrors
          */
@@ -144,5 +156,25 @@ class LoxTest extends TestCase
 
         $missingErrors = array_diff($this->expectedErrors, $foundErrors);
         $this->assertEmpty($missingErrors, sprintf('Missing expected errors: %s', implode(', ', $missingErrors)));
+    }
+
+    /**
+     * @psalm-suppress PossiblyNullArgument
+     */
+    private function assertRuntimeError(array $errorLines): void
+    {
+        $this->assertNotEmpty($errorLines, sprintf('Expected runtime error "%s" and got none', $this->expectedRuntimeError));
+        $this->assertSame($this->expectedRuntimeError, reset($errorLines), sprintf('Expected runtime error "%s" and got: %s', $this->expectedRuntimeError, reset($errorLines)));
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function splitOutput(string $output): array
+    {
+        $lines = explode("\n", $output);
+        array_pop($lines);
+
+        return $lines;
     }
 }
