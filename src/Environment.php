@@ -4,6 +4,9 @@ namespace Lox;
 
 class Environment
 {
+    /**
+     * @var array<string, mixed>
+     */
     private array $values = [];
 
     public function define(string $name, $value): void
@@ -13,7 +16,7 @@ class Environment
 
     public function get(Token $name)
     {
-        if (isset($this->values[$name->lexeme()])) {
+        if (array_key_exists($name->lexeme(), $this->values)) {
             return $this->values[$name->lexeme()];
         }
 

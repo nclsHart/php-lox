@@ -1,5 +1,7 @@
 <?php
 
+namespace Lox\Tests;
+
 use Lox\Scanner;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -18,6 +20,9 @@ class ScannerTest extends TestCase
         }
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     */
     public static function provideSource(): array
     {
         return [
@@ -110,7 +115,12 @@ class ScannerTest extends TestCase
 
     public function test_scan_complete_file(): void
     {
-        $scanner = new Scanner(file_get_contents(__DIR__ . '/lox/operator/add.lox'));
+        $source = file_get_contents(__DIR__ . '/lox/operator/add.lox');
+        if (false === $source) {
+            throw new \RuntimeException('Failed to read lox file');
+        }
+
+        $scanner = new Scanner($source);
         $tokens = $scanner->scanTokens();
 
         $this->assertCount(11, $tokens);

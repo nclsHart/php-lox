@@ -1,5 +1,7 @@
 <?php
 
+namespace Lox\Tests;
+
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use SebastianBergmann\FileIterator\Factory;
@@ -7,55 +9,46 @@ use Symfony\Component\Process\Process;
 
 class LoxTest extends TestCase
 {
-    public const FIXTURES_DIR = __DIR__ . '/lox';
+    /**
+     * @var list<OutputExpectation>
+     */
+    private array $outputExpectations = [];
+
+    public const string FIXTURES_DIR = __DIR__ . '/lox';
 
     #[DataProvider('provideFiles')]
-    public function test_lox(SplFileInfo $file): void
+    public function test_lox(\SplFileInfo $file): void
     {
         $process = Process::fromShellCommandline(sprintf(__DIR__ . '/../bin/php-lox %s', $file->getPathname()));
         $process->run();
 
-        $lineNum = 1;
-        $expectations = [];
         $resource = fopen($file->getPathname(), 'r');
-        while ($line = fgets($resource)) {
-            $matches = [];
-            preg_match('#// expect: ?(?P<output>.*)#', $line, $matches);
+        if (false === $resource) {
+            throw new \RuntimeException(sprintf('Unable to open file: %s', $file->getPathname()));
+        }
 
-            if (!empty($matches)) {
-                $expectations[] = [$matches['output'], $lineNum];
-            }
+        $lineNum = 1;
+        while ($line = fgets($resource)) {
+            $this->matchOutputExpectations($line, $lineNum);
 
             $lineNum++;
         }
         fclose($resource);
 
         $output = $process->getOutput();
-        $outputLines = explode("\n", $output);
-        array_pop($outputLines);
 
-        $index = 0;
-        foreach ($outputLines as $outputLine) {
-            if ($index >= count($expectations)) {
-                $this->fail(sprintf('Got output "%s" when none was expected.', $outputLine));
-            };
-
-            $this->assertSame(
-                $expectations[$index][0],
-                $outputLine,
-                sprintf('Expected output "%s" on line %s and got "%s".', $expectations[$index][0], $expectations[$index][1], $outputLine)
-            );
-
-            $index++;
-        }
-
-        if ($index < count($expectations)) {
-            $this->fail(sprintf('Missing expected output "%s" on line %s.', $expectations[$index][0], $expectations[$index][1]));
-        }
+        $this->assertOutputExpectations($output);
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     */
     public static function provideFiles(): iterable
     {
+        /**
+         * @psalm-suppress InternalClass InternalMethod
+         * @psalm-suppress InternalMethod
+         */
         $files = (new Factory())->getFileIterator(__DIR__ . '/lox', '.lox');
 
         foreach ($files as $file) {
@@ -63,11 +56,46 @@ class LoxTest extends TestCase
         }
     }
 
-    private static function extractDataSetName(SplFileInfo $file): string
+    private static function extractDataSetName(\SplFileInfo $file): string
     {
         return trim(
             str_replace(self::FIXTURES_DIR, '', $file->getPathname()),
             '/'
         );
+    }
+
+    private function matchOutputExpectations(string $line, int $lineNum): void
+    {
+        $matches = [];
+        preg_match('#// expect: ?(?P<output>.*)#', $line, $matches);
+
+        if (!empty($matches)) {
+            $this->outputExpectations[] = new OutputExpectation($matches['output'], $lineNum);
+        }
+    }
+
+    private function assertOutputExpectations($output): void
+    {
+        $outputLines = explode("\n", $output);
+        array_pop($outputLines);
+
+        $index = 0;
+        foreach ($outputLines as $outputLine) {
+            if ($index >= count($this->outputExpectations)) {
+                $this->fail(sprintf('Got output "%s" when none was expected.', $outputLine));
+            }
+
+            $this->assertSame(
+                $this->outputExpectations[$index]->expectedOutput,
+                $outputLine,
+                sprintf('Expected output "%s" on line %s and got "%s".', $this->outputExpectations[$index]->expectedOutput, $this->outputExpectations[$index]->lineNum, $outputLine)
+            );
+
+            $index++;
+        }
+
+        if ($index < count($this->outputExpectations)) {
+            $this->fail(sprintf('Missing expected output "%s" on line %s.', $this->outputExpectations[$index]->expectedOutput, $this->outputExpectations[$index]->lineNum));
+        }
     }
 }
