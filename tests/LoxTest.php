@@ -88,15 +88,6 @@ class LoxTest extends TestCase
         if (!empty($matches)) {
             $this->expectedErrors[] = sprintf('[%s] %s', $matches['line'], $matches['message']);
         }
-
-        /**
-         * // If we expect a compile error, it should exit with EX_DATAERR.
-         * _expectedExitCode = 65;
-         * _expectations++;
-         * }
-         * continue;
-         * }
-         */
     }
 
     private function assertExpectedOutputs($output): void
