@@ -10,9 +10,9 @@ use Symfony\Component\Process\Process;
 class LoxTest extends TestCase
 {
     /**
-     * @var list<OutputExpectation>
+     * @var list<ExpectedOutput>
      */
-    private array $outputExpectations = [];
+    private array $expectedOutputs = [];
 
     public const string FIXTURES_DIR = __DIR__ . '/lox';
 
@@ -29,7 +29,7 @@ class LoxTest extends TestCase
 
         $lineNum = 1;
         while ($line = fgets($resource)) {
-            $this->matchOutputExpectations($line, $lineNum);
+            $this->collectExpectedOutputs($line, $lineNum);
 
             $lineNum++;
         }
@@ -37,7 +37,7 @@ class LoxTest extends TestCase
 
         $output = $process->getOutput();
 
-        $this->assertOutputExpectations($output);
+        $this->assertExpectedOutputs($output);
     }
 
     /**
@@ -64,38 +64,38 @@ class LoxTest extends TestCase
         );
     }
 
-    private function matchOutputExpectations(string $line, int $lineNum): void
+    private function collectExpectedOutputs(string $line, int $lineNum): void
     {
         $matches = [];
         preg_match('#// expect: ?(?P<output>.*)#', $line, $matches);
 
         if (!empty($matches)) {
-            $this->outputExpectations[] = new OutputExpectation($matches['output'], $lineNum);
+            $this->expectedOutputs[] = new ExpectedOutput($matches['output'], $lineNum);
         }
     }
 
-    private function assertOutputExpectations($output): void
+    private function assertExpectedOutputs($output): void
     {
         $outputLines = explode("\n", $output);
         array_pop($outputLines);
 
         $index = 0;
         foreach ($outputLines as $outputLine) {
-            if ($index >= count($this->outputExpectations)) {
+            if ($index >= count($this->expectedOutputs)) {
                 $this->fail(sprintf('Got output "%s" when none was expected.', $outputLine));
             }
 
             $this->assertSame(
-                $this->outputExpectations[$index]->expectedOutput,
+                $this->expectedOutputs[$index]->output,
                 $outputLine,
-                sprintf('Expected output "%s" on line %s and got "%s".', $this->outputExpectations[$index]->expectedOutput, $this->outputExpectations[$index]->lineNum, $outputLine)
+                sprintf('Expected output "%s" on line %s and got "%s".', $this->expectedOutputs[$index]->output, $this->expectedOutputs[$index]->line, $outputLine)
             );
 
             $index++;
         }
 
-        if ($index < count($this->outputExpectations)) {
-            $this->fail(sprintf('Missing expected output "%s" on line %s.', $this->outputExpectations[$index]->expectedOutput, $this->outputExpectations[$index]->lineNum));
+        if ($index < count($this->expectedOutputs)) {
+            $this->fail(sprintf('Missing expected output "%s" on line %s.', $this->expectedOutputs[$index]->output, $this->expectedOutputs[$index]->line));
         }
     }
 }
