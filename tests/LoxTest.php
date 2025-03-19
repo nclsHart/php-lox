@@ -21,6 +21,8 @@ class LoxTest extends TestCase
 
     private ?string $expectedRuntimeError = null;
 
+    private int $expectedExitCode = 0;
+
     public const string FIXTURES_DIR = __DIR__ . '/lox';
 
     #[DataProvider('provideFiles')]
@@ -51,6 +53,7 @@ class LoxTest extends TestCase
             $this->assertExpectedErrors($errorLines);
         }
 
+        $this->assertExitCode((int) $process->getExitCode());
         $this->assertExpectedOutputs($process->getOutput());
     }
 
@@ -95,6 +98,7 @@ class LoxTest extends TestCase
 
         if (!empty($matches)) {
             $this->expectedErrors[] = sprintf('[%s] %s', $matches['line'], $matches['message']);
+            $this->expectedExitCode = 65;
         }
     }
 
@@ -105,6 +109,7 @@ class LoxTest extends TestCase
 
         if (!empty($matches)) {
             $this->expectedRuntimeError = sprintf('%s [line %s]', $matches['message'], $lineNum);
+            $this->expectedExitCode = 70;
         }
     }
 
@@ -165,6 +170,11 @@ class LoxTest extends TestCase
     {
         $this->assertNotEmpty($errorLines, sprintf('Expected runtime error "%s" and got none', $this->expectedRuntimeError));
         $this->assertSame($this->expectedRuntimeError, reset($errorLines), sprintf('Expected runtime error "%s" and got: %s', $this->expectedRuntimeError, reset($errorLines)));
+    }
+
+    private function assertExitCode(int $exitCode): void
+    {
+        $this->assertSame($this->expectedExitCode, $exitCode, sprintf('Expected return code %s and got %s', $this->expectedExitCode, $exitCode));
     }
 
     /**
