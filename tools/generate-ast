@@ -22,6 +22,7 @@ defineAst(EXPR_DIR, 'Expr', [
 
 // Stmt classes must have Stmt suffix to be valid
 defineAst(STMT_DIR, 'Stmt', [
+    'BlockStmt      : List<Stmt> statements',
     'ExpressionStmt : Lox\Expr\Expr expression',
     'PrintStmt      : Lox\Expr\Expr expression',
     'VarStmt        : Lox\Token name, ?Lox\Expr\Expr initializer',
@@ -98,10 +99,20 @@ function generateType(string $baseName, string $className, array $properties = [
     foreach ($properties as $property) {
         $parts = explode(' ', trim($property));
 
-        $type = null;
+        $type = 'mixed';
+        $propertyComment = null;
+        $constructorComment = null;
+        $returnComment = null;
         if (isset($parts[1])) {
             $type = $parts[0];
             $propertyName = $parts[1];
+
+            if (preg_match('/^List<.*>$/', $type)) {
+                $propertyComment = sprintf('@var %s', lcfirst($type));
+                $constructorComment = sprintf('@param %s $%s', lcfirst($type), $propertyName);
+                $returnComment = sprintf('@return %s', lcfirst($type));
+                $type = 'array';
+            }
         } else {
             $propertyName = $parts[0];
         }
@@ -110,20 +121,25 @@ function generateType(string $baseName, string $className, array $properties = [
         $property = $class->addProperty($propertyName);
         $property->setVisibility('private');
         $property->setType($type);
+        if (null !== $propertyComment) {
+            $property->setComment($propertyComment);
+        }
 
         // add constructor parameter and init property
         $parameter = $constructor->addParameter($propertyName);
-        if (null !== $type) {
-            $parameter->setType($type);
-        }
+        $parameter->setType($type);
         $constructor->addBody('$this->? = $?;', [$propertyName, $propertyName]);
+        if (null !== $constructorComment) {
+            $constructor->addComment($constructorComment);
+        }
 
         // add getter
         $getter = $class->addMethod($propertyName);
-        if (null !== $type) {
-            $getter->setReturnType($type);
-        }
+        $getter->setReturnType($type);
         $getter->addBody('return $this->?;', [$propertyName]);
+        if (null !== $returnComment) {
+            $getter->addComment($returnComment);
+        }
     }
 
     // implements accept method
@@ -153,7 +169,7 @@ function writeClass(string $outputDir, string $baseName, ClassType|InterfaceType
     if ($class instanceof ClassType && $class->hasMethod('__construct')) {
         $constructor = $class->getMethod('__construct');
         foreach ($constructor->getParameters() as $parameter) {
-            if (null !== $parameter->getType() && !in_array($parameter->getType(), $namespace->getUses())) {
+            if (null !== $parameter->getType() && !in_array($parameter->getType(), $namespace->getUses()) && str_contains((string) $parameter->getType(), '\\')) {
                 $namespace->addUse((string) $parameter->getType());
             }
         }
@@ -166,6 +182,6 @@ function writeClass(string $outputDir, string $baseName, ClassType|InterfaceType
 
     file_put_contents(
         sprintf('%s/%s.php', $outputDir, $className),
-        (new PsrPrinter)->printFile($file)
+        (new PsrPrinter())->printFile($file)
     );
 }

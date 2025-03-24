@@ -10,14 +10,14 @@ namespace Lox\Expr;
 
 final class Literal extends Expr
 {
-    private $value;
+    private mixed $value;
 
-    public function __construct($value)
+    public function __construct(mixed $value)
     {
         $this->value = $value;
     }
 
-    public function value()
+    public function value(): mixed
     {
         return $this->value;
     }

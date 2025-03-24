@@ -9,6 +9,7 @@ use Lox\Expr\Grouping;
 use Lox\Expr\Literal;
 use Lox\Expr\Unary;
 use Lox\Expr\Variable;
+use Lox\Stmt\BlockStmt;
 use Lox\Stmt\ExpressionStmt;
 use Lox\Stmt\PrintStmt;
 use Lox\Stmt\Stmt;
@@ -69,6 +70,10 @@ class Parser
             return $this->printStatement();
         }
 
+        if ($this->match(TokenType::LEFT_BRACE)) {
+            return new BlockStmt($this->block());
+        }
+
         return $this->expressionStatement();
     }
 
@@ -100,6 +105,26 @@ class Parser
         $this->consume(TokenType::SEMICOLON, 'Expect ";" after expression.');
 
         return new ExpressionStmt($expr);
+    }
+
+    /**
+     * @return list<Stmt>
+     */
+    private function block(): array
+    {
+        $statements = [];
+
+        while (!$this->check(TokenType::RIGHT_BRACE) && !$this->isAtEnd()) {
+            $declaration = $this->declaration();
+
+            if (null !== $declaration) {
+                $statements[] = $declaration;
+            }
+        }
+
+        $this->consume(TokenType::RIGHT_BRACE, 'Expect "}" after block.');
+
+        return $statements;
     }
 
     private function assignment(): Expr

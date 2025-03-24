@@ -10,6 +10,7 @@ use Lox\Expr\Literal;
 use Lox\Expr\Unary;
 use Lox\Expr\Variable;
 use Lox\Expr\Visitor as VisitorExpr;
+use Lox\Stmt\BlockStmt;
 use Lox\Stmt\ExpressionStmt;
 use Lox\Stmt\PrintStmt;
 use Lox\Stmt\Stmt;
@@ -164,6 +165,12 @@ class Interpreter implements VisitorExpr, VisitorStmt
     }
 
     #[\Override]
+    public function visitBlockStmt(BlockStmt $stmt): void
+    {
+        $this->executeBlock($stmt->statements(), new Environment($this->environment));
+    }
+
+    #[\Override]
     public function visitAssignExpr(Assign $expr)
     {
         $value = $this->evaluate($expr->value());
@@ -181,6 +188,24 @@ class Interpreter implements VisitorExpr, VisitorStmt
     private function execute(Stmt $stmt): void
     {
         $stmt->accept($this);
+    }
+
+    /**
+     * @param list<Stmt> $statements
+     */
+    private function executeBlock(array $statements, Environment $environment): void
+    {
+        $previousEnvironment = $this->environment;
+
+        try {
+            $this->environment = $environment;
+
+            foreach ($statements as $statement) {
+                $this->execute($statement);
+            }
+        } finally {
+            $this->environment = $previousEnvironment;
+        }
     }
 
     private function isTruthy($object): bool
