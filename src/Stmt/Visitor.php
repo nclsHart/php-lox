@@ -14,6 +14,8 @@ interface Visitor
 
     public function visitExpressionStmt(ExpressionStmt $stmt): void;
 
+    public function visitIfStmt(IfStmt $stmt): void;
+
     public function visitPrintStmt(PrintStmt $stmt): void;
 
     public function visitVarStmt(VarStmt $stmt): void;
