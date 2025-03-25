@@ -12,6 +12,7 @@ use Lox\Expr\Variable;
 use Lox\Expr\Visitor as VisitorExpr;
 use Lox\Stmt\BlockStmt;
 use Lox\Stmt\ExpressionStmt;
+use Lox\Stmt\IfStmt;
 use Lox\Stmt\PrintStmt;
 use Lox\Stmt\Stmt;
 use Lox\Stmt\VarStmt;
@@ -144,6 +145,16 @@ class Interpreter implements VisitorExpr, VisitorStmt
     public function visitExpressionStmt(ExpressionStmt $stmt): void
     {
         $this->evaluate($stmt->expression());
+    }
+
+    #[\Override]
+    public function visitIfStmt(IfStmt $stmt): void
+    {
+        if ($this->isTruthy($this->evaluate($stmt->condition()))) {
+            $this->execute($stmt->thenBranch());
+        } elseif (null !== $stmt->elseBranch()) {
+            $this->execute($stmt->elseBranch());
+        }
     }
 
     #[\Override]

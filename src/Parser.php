@@ -11,6 +11,7 @@ use Lox\Expr\Unary;
 use Lox\Expr\Variable;
 use Lox\Stmt\BlockStmt;
 use Lox\Stmt\ExpressionStmt;
+use Lox\Stmt\IfStmt;
 use Lox\Stmt\PrintStmt;
 use Lox\Stmt\Stmt;
 use Lox\Stmt\VarStmt;
@@ -66,6 +67,10 @@ class Parser
 
     private function statement(): Stmt
     {
+        if ($this->match(TokenType::IF)) {
+            return $this->ifStatement();
+        }
+
         if ($this->match(TokenType::PRINT)) {
             return $this->printStatement();
         }
@@ -75,6 +80,21 @@ class Parser
         }
 
         return $this->expressionStatement();
+    }
+
+    private function ifStatement(): Stmt
+    {
+        $this->consume(TokenType::LEFT_PAREN, 'Expect "(" after "if".');
+        $condition = $this->expression();
+        $this->consume(TokenType::RIGHT_PAREN, 'Expect ")" after if condition.');
+
+        $thenBranch = $this->statement();
+        $elseBranch = null;
+        if ($this->match(TokenType::ELSE)) {
+            $elseBranch = $this->statement();
+        }
+
+        return new IfStmt($condition, $thenBranch, $elseBranch);
     }
 
     private function printStatement(): Stmt

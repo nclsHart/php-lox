@@ -22,8 +22,9 @@ defineAst(EXPR_DIR, 'Expr', [
 
 // Stmt classes must have Stmt suffix to be valid
 defineAst(STMT_DIR, 'Stmt', [
-    'BlockStmt      : List<Stmt> statements',
+    'BlockStmt      : list<Stmt> statements',
     'ExpressionStmt : Lox\Expr\Expr expression',
+    'IfStmt         : Lox\Expr\Expr condition, Lox\Stmt\Stmt thenBranch, ?Lox\Stmt\Stmt elseBranch',
     'PrintStmt      : Lox\Expr\Expr expression',
     'VarStmt        : Lox\Token name, ?Lox\Expr\Expr initializer',
 ]);
@@ -107,10 +108,10 @@ function generateType(string $baseName, string $className, array $properties = [
             $type = $parts[0];
             $propertyName = $parts[1];
 
-            if (preg_match('/^List<.*>$/', $type)) {
-                $propertyComment = sprintf('@var %s', lcfirst($type));
-                $constructorComment = sprintf('@param %s $%s', lcfirst($type), $propertyName);
-                $returnComment = sprintf('@return %s', lcfirst($type));
+            if (preg_match('/^list<.*>$/', $type)) {
+                $propertyComment = sprintf('@var %s', $type);
+                $constructorComment = sprintf('@param %s $%s', $type, $propertyName);
+                $returnComment = sprintf('@return %s', $type);
                 $type = 'array';
             }
         } else {
